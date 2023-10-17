@@ -1,0 +1,27 @@
+:root {
+  --bv-primary: #3491FA;
+  --bv-primary-active: #3491FA50;
+  --bv-plain: #EAF8F6;
+  --bv-orange: #FCA21C;
+  --bv-text1: #121826;
+  --bv-text2: #3C3E42;
+  --bv-text3: #6F6F6F;
+  --bv-tag: #848484;
+  --bv-dark: #979797;
+  --bv-tip: #C3C3C5;
+  --bv-disable: #D9DBDE;
+  --bv-line: #EDEDED;
+  --bv-bg: #F6F7F9;
+  --bv-price: #EB5757;
+  /* 覆盖 Vant 的主色变量 */
+  --van-primary-color: var(--bv-primary);
+
+  /* 设置单元格的上下内边距 */
+  --van-cell-vertical-padding: 14px;
+
+  /* 自定义复选框的大小 */
+  --van-checkbox-size: 14px;
+
+  /* 自定义默认按钮的文字大小 */
+  --van-button-normal-font-size: 16px;
+}

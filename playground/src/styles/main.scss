@@ -1,0 +1,31 @@
+/* 导入外部的变量文件 variables.scss */
+/* 请确保正确路径 */
+@import "variables.scss";
+
+/* 全局样式 */
+body {
+  font-size: 14px;
+  color: var(--bv-text1);
+}
+
+a {
+  color: var(--bv-text2);
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
+.van-tabs .van-tabs__nav {
+  padding: 0 0 15px 0;
+}
+
+.van-tabs .van-tabs__line {
+  width: 20px;
+  background-color: var(--bv-primary);
+}
+
+.van-tabs .van-tab {
+  padding: 0 15px;
+}

@@ -1,0 +1,75 @@
+/* 登录模块 */
+.login-module {
+  /* 登录页块 */
+  &-page {
+    padding-top: 46px;
+  }
+
+  /* 登录头部块 */
+  &-header {
+    display: flex;
+    padding: 15px 18px;
+    justify-content: space-between;
+    align-items: flex-end;
+    line-height: 1;
+
+    .title {
+      font-weight: normal;
+      font-size: 24px;
+    }
+
+    .link {
+      font-size: 15px;
+    }
+  }
+
+  /* 其他登录选项块 */
+  &-options {
+    margin-top: 40px;
+    padding: 0 30px;
+
+    .icon-container {
+      display: flex;
+      justify-content: center;
+
+      .icon {
+        width: 36px;
+        height: 36px;
+        padding: 4px;
+      }
+    }
+  }
+}
+
+/* Van 表单样式 */
+.van-form {
+  padding: 0 14px;
+
+  /* 自定义单元格样式 */
+  .custom-cell {
+    height: 52px;
+    line-height: 24px;
+    padding: 14px 16px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+
+    /* Van 复选框样式 */
+    .van-checkbox {
+      a {
+        color: var(--bv-primary);
+        padding: 0 5px;
+      }
+    }
+  }
+
+  /* 发送按钮样式 */
+  .send-button {
+    color: var(--bv-primary);
+
+    /* 激活状态样式 */
+    &.active {
+      color: var(--bv-primary-active);
+    }
+  }
+}
