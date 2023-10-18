@@ -11,6 +11,9 @@
 [code-style-image]: https://img.shields.io/badge/code__style-%40kirklin%2Feslint--config-brightgreen
 [code-style-url]: https://github.com/kirklin/eslint-config/
 
+<div align='center'>
+<b>English</b> | <a href="README.zh-CN.md">简体中文</a>
+</div>
 
 This is a PostCSS plugin that converts pixel units to viewport units (vw, vh, vmin, vmax). The code has been migrated from the original project [evrone/postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport), as it is no longer maintained. This migrated code is compatible with the latest version of PostCSS.
 
@@ -81,7 +84,7 @@ Here's an example configuration that converts pixel values to vw units for a vie
 module.exports = {
   plugins: {
     "postcss-px-conversion": {
-  		unitType: UnitType.PX,
+  		unitType: "px",
   		viewportWidth: 375,
   		unitPrecision: 5,
   		allowedProperties: ["*"],
