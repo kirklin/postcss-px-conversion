@@ -46,7 +46,7 @@ export interface Options {
    * The width of the viewport.
    * 视口的宽度。
    */
-  viewportWidth: number;
+  viewportWidth: number | ((filePath: string) => number | undefined);
 
   /**
    * The number of decimal places allowed for vw units.
@@ -130,5 +130,5 @@ export interface Options {
    * Viewport width for landscape orientation.
    * 横向模式下的视口宽度。
    */
-  landscapeViewportWidth: number;
+  landscapeViewportWidth: number | ((filePath: string) => number | undefined);
 }

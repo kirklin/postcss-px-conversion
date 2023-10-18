@@ -7,24 +7,14 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    ILoginEyeOff: typeof import('~icons/login/eye-off')['default']
-    ILoginEyeOn: typeof import('~icons/login/eye-on')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    UnoCSSIconButton: typeof import('./../src/components/Icon/UnoCSSIconButton.vue')['default']
-    VanBadge: typeof import('vant/es')['Badge']
     VanButton: typeof import('vant/es')['Button']
-    VanCell: typeof import('vant/es')['Cell']
     VanCheckbox: typeof import('vant/es')['Checkbox']
-    VanCol: typeof import('vant/es')['Col']
     VanConfigProvider: typeof import('vant/es')['ConfigProvider']
     VanField: typeof import('vant/es')['Field']
     VanForm: typeof import('vant/es')['Form']
     VanIcon: typeof import('vant/es')['Icon']
-    VanImage: typeof import('vant/es')['Image']
     VanNavBar: typeof import('vant/es')['NavBar']
-    VanRow: typeof import('vant/es')['Row']
-    VanTabbar: typeof import('vant/es')['Tabbar']
-    VanTabbarItem: typeof import('vant/es')['TabbarItem']
   }
 }
