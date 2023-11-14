@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["DOM", "ESNext"],
     "jsx": "preserve",
+    "lib": ["DOM", "ESNext"],
+    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "node",
-    "baseUrl": ".",
     "paths": {
       "~/*": ["src/*"],
       "#/*": ["types/*"]
     },
+    "resolveJsonModule": true,
     "typeRoots": ["./types"],
     "types": [
       "vitest",
@@ -17,14 +18,13 @@
       "unplugin-icons/types/vue",
       "@intlify/unplugin-vue-i18n/messages"
     ],
-    "resolveJsonModule": true,
     "allowJs": true,
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "strict": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
     "skipLibCheck": true
   },
   "exclude": ["dist", "node_modules"]

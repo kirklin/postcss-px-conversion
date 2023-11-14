@@ -13,7 +13,7 @@ import { onUnmounted, ref } from "vue";
  * @param sendCodeFn - The function responsible for sending the mobile code.
  * @returns An object containing functions and data related to sending mobile codes.
  */
-export const useMobileCode = (mobileRef: Ref<string>, codeType = "login", sendCodeFn: (mobile: string, codeType: string) => Promise<void>) => {
+export function useMobileCode(mobileRef: Ref<string>, codeType = "login", sendCodeFn: (mobile: string, codeType: string) => Promise<void>) {
   // Initialize the countdown timer value and the form reference.
   const countdownValue = ref(0);
   const formRef = ref<FormInstance>();
@@ -59,4 +59,4 @@ export const useMobileCode = (mobileRef: Ref<string>, codeType = "login", sendCo
 
   // Return the functions and data.
   return { sendMobileCode, countdownValue, formRef };
-};
+}

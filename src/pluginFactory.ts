@@ -12,7 +12,7 @@ import {
 } from "./utils";
 import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 
-export const plugin = (customOptions: Partial<Options> = {}): Plugin => {
+export function plugin(customOptions: Partial<Options> = {}): Plugin {
   const options: Options = { ...DEFAULT_OPTIONS, ...customOptions };
   const unitRegexp = getUnitRegexp(options.unitType);
   const isAllowedProperty = createPropertiesListMatcher(options.allowedProperties);
@@ -28,7 +28,7 @@ export const plugin = (customOptions: Partial<Options> = {}): Plugin => {
         if (shouldExclude(options, sourceFile) || isBlacklistedSelector(rule.selector, options.selectorBlacklist)) {
           return undefined;
         }
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // eslint-disable-next-line ts/ban-ts-comment
         // @ts-expect-error
         // 如果启用了横向（landscape）支持并且规则没有参数
         if (options.enableLandscape && !rule.parent?.params) {
@@ -66,7 +66,7 @@ export const plugin = (customOptions: Partial<Options> = {}): Plugin => {
           }
         }
 
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // eslint-disable-next-line ts/ban-ts-comment
         // @ts-expect-error
         // 如果不满足媒体查询参数的验证条件，跳过
         if (!validateMediaQueryParams(rule.parent?.params, options.allowMediaQuery)) {
@@ -99,7 +99,7 @@ export const plugin = (customOptions: Partial<Options> = {}): Plugin => {
 
           let targetUnit;
           let targetSize;
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // eslint-disable-next-line ts/ban-ts-comment
           // @ts-expect-error
           const parentParams = rule.parent?.params;
 
@@ -157,4 +157,4 @@ export const plugin = (customOptions: Partial<Options> = {}): Plugin => {
       }
     },
   };
-};
+}

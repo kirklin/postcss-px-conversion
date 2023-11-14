@@ -32,7 +32,7 @@ const filterPropertiesList: Record<string, PropFilterFunction> = {
       .map(m => m.slice(1, m.length - 2)),
 };
 
-const createPropertiesListMatcher = (propList: string[]): ((prop: string) => boolean) => {
+function createPropertiesListMatcher(propList: string[]): ((prop: string) => boolean) {
   const hasWild = propList.includes("*");
   const matchAll = hasWild && propList.length === 1;
 
@@ -65,6 +65,6 @@ const createPropertiesListMatcher = (propList: string[]): ((prop: string) => boo
         )
     );
   };
-};
+}
 
 export { filterPropertiesList, createPropertiesListMatcher };

@@ -40,23 +40,19 @@ export function isBlacklistedSelector(selector: string, blacklist: (string | Reg
   return false;
 }
 
-export const getUnitFromOptions = (prop: string | string[], opts: Options) => {
+export function getUnitFromOptions(prop: string | string[], opts: Options) {
   // 根据属性类型获取相应的单位选项
   return !Array.isArray(prop) ? (prop.includes("font") ? opts.fontViewportUnit : opts.viewportUnit) : opts.viewportUnit;
-};
+}
 
-export const roundNumberToPrecision = (number: number, precision: number) => {
+export function roundNumberToPrecision(number: number, precision: number) {
   // 四舍五入数字到指定的小数位数精度
   const multiplier = 10 ** precision;
   const roundedNumber = Math.round(number * multiplier) / multiplier;
   return roundedNumber;
-};
+}
 
-export const createUnitReplaceFunction = (
-  opts: Options,
-  targetUnit: string | number,
-  targetSize: number,
-) => {
+export function createUnitReplaceFunction(opts: Options, targetUnit: string | number, targetSize: number) {
   return function (match: string, pixelValue: string) {
     if (!pixelValue) {
       return match;
@@ -68,15 +64,15 @@ export const createUnitReplaceFunction = (
     const convertedValue = roundNumberToPrecision((pixels / targetSize) * 100, opts.unitPrecision!);
     return convertedValue === 0 ? "0" : `${convertedValue}${targetUnit}`;
   };
-};
+}
 
-export const doesDeclarationExist = (declarations: any, property: string, value: string) => {
+export function doesDeclarationExist(declarations: any, property: string, value: string) {
   return declarations?.some((declaration: any) => {
     return declaration.prop === property && declaration.value === value;
   });
-};
+}
 
-export const validateMediaQueryParams = (params: string, requiresMediaQuery: boolean) => {
+export function validateMediaQueryParams(params: string, requiresMediaQuery: boolean) {
   // 验证媒体查询参数是否符合要求
   return !params || (params && requiresMediaQuery);
-};
+}
