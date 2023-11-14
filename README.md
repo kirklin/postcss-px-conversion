@@ -1,14 +1,25 @@
 # postcss-px-conversion
 
-[![CI][ci-image]][ci-url] [![npm][npm-image]][npm-url] [![downloads][downloads-image]][downloads-url] [![javascript_code style][code-style-image]][code-style-url]
+[![npm version][npm-version-src]][npm-version-href]
+[![npm downloads][npm-downloads-src]][npm-downloads-href]
+[![bundle][bundle-src]][bundle-href]
+[![JSDocs][jsdocs-src]][jsdocs-href]
+[![License][license-src]][license-href]
+[![javascript_code style][code-style-image]][code-style-url]
 
-[ci-image]: https://github.com/kirklin/postcss-px-conversion/actions/workflows/release.yml/badge.svg?branch=main
-[ci-url]: https://github.com/kirklin/postcss-px-conversion/actions/workflows/release.yml
-[npm-image]: https://img.shields.io/npm/v/postcss-px-conversion.svg
-[npm-url]: https://npmjs.org/package/postcss-px-conversion
-[downloads-image]: https://img.shields.io/npm/dm/postcss-px-conversion.svg
-[downloads-url]: https://npmjs.org/package/postcss-px-conversion
-[code-style-image]: https://img.shields.io/badge/code__style-%40kirklin%2Feslint--config-brightgreen
+<!-- Badges -->
+
+[npm-version-src]: https://img.shields.io/npm/v/postcss-px-conversion?style=flat&colorA=080f12&colorB=3491fa
+[npm-version-href]: https://npmjs.com/package/postcss-px-conversion
+[npm-downloads-src]: https://img.shields.io/npm/dm/postcss-px-conversion?style=flat&colorA=080f12&colorB=3491fa
+[npm-downloads-href]: https://npmjs.com/package/postcss-px-conversion
+[bundle-src]: https://img.shields.io/bundlephobia/minzip/postcss-px-conversion?style=flat&colorA=080f12&colorB=3491fa&label=minzip
+[bundle-href]: https://bundlephobia.com/result?p=postcss-px-conversion
+[license-src]: https://img.shields.io/github/license/kirklin/postcss-px-conversion.svg?style=flat&colorA=080f12&colorB=3491fa
+[license-href]: https://github.com/kirklin/postcss-px-conversion/blob/main/LICENSE
+[jsdocs-src]: https://img.shields.io/badge/jsdocs-reference-080f12?style=flat&colorA=080f12&colorB=3491fa
+[jsdocs-href]: https://www.jsdocs.io/package/postcss-px-conversion
+[code-style-image]: https://img.shields.io/badge/code__style-%40kirklin%2Feslint--config-3491fa?style=flat&colorA=080f12&colorB=3491fa
 [code-style-url]: https://github.com/kirklin/eslint-config/
 
 <div align='center'>
