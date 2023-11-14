@@ -4,6 +4,8 @@ import Vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import { VantResolver } from "unplugin-vue-components/resolvers";
 import AutoImport from "unplugin-auto-import/vite";
+import postcssPxConversion from "postcss-px-conversion";
+import { UnitType } from "../src/types";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -48,6 +50,14 @@ export default defineConfig({
     },
   },
   css: {
+    postcss: {
+      plugins: [postcssPxConversion({
+        unitType: UnitType.PX, // The unit to convert from (default is 'px')
+        viewportWidth: 375,
+        // Other configuration options...
+      },
+      )],
+    },
     preprocessorOptions: {
       scss: {
         additionalData: `
