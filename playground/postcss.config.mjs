@@ -1,6 +1,4 @@
-// postcss.config.js
-
-module.exports = {
+export default {
   plugins: {
     "postcss-px-conversion": {
       unitType: "px", // The unit to convert from (default is 'px')

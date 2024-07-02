@@ -63,8 +63,8 @@ importers:
         specifier: ^16.4.5
         version: 16.4.5
       postcss-px-conversion:
-        specifier: workspace:*
-        version: link:..
+        specifier: 0.1.1
+        version: 0.1.1(postcss@8.4.39)
       vue:
         specifier: ^3.4.31
         version: 3.4.31(typescript@5.5.3)
@@ -2986,6 +2986,12 @@ packages:
     resolution: {integrity: sha512-9Um4pSydK4U2di+ZwHIiBe/Fr5E+d4NdvMw7CwssqefcgCK3gGLBcpHEjoh0nHDOiOtadPH6jEv14Yu0bIvYOg==}
     engines: {node: '>=18.12'}
     hasBin: true
+
+  postcss-px-conversion@0.1.1:
+    resolution: {integrity: sha512-/WkMwYkK87YeKncKfwWXuAQakR+/AcODNS3fAudyDrrYBHNT/zctPc7tUKwmTzoCtMCdR+Xj5KVFaXs4DYzyVQ==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      postcss: '>=8.0.0'
 
   postcss-selector-parser@6.1.0:
     resolution: {integrity: sha512-UMz42UD0UY0EApS0ZL9o1XnLhSTtvvvLe5Dc2H2O56fvRZi+KulDyf5ctDhhtYJBGKStV2FL1fy6253cmLgqVQ==}
@@ -6733,6 +6739,10 @@ snapshots:
   pluralize@8.0.0: {}
 
   pnpm@9.4.0: {}
+
+  postcss-px-conversion@0.1.1(postcss@8.4.39):
+    dependencies:
+      postcss: 8.4.39
 
   postcss-selector-parser@6.1.0:
     dependencies:

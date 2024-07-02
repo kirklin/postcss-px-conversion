@@ -1,17 +1,8 @@
 {
-  "name": "boot-vant",
+  "name": "playground",
   "version": "0.0.1",
   "private": true,
   "packageManager": "pnpm@9.4.0",
-  "description": "template for Vue3 Vant Mobile",
-  "keywords": [
-    "BootVant",
-    "boot-vant",
-    "vite",
-    "unocss",
-    "fast",
-    "boot"
-  ],
   "main": "src/main.ts",
   "scripts": {
     "dev": "vite",
@@ -27,7 +18,7 @@
     "@kirklin/logger": "^0.0.2",
     "@kirklin/reset-css": "^0.0.6",
     "dotenv": "^16.4.5",
-    "postcss-px-conversion": "workspace:*",
+    "postcss-px-conversion": "0.1.1",
     "vue": "^3.4.31",
     "vue-router": "^4.4.0"
   },
