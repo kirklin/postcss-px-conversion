@@ -55,6 +55,21 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
           }
         });
       }
+      css.walkAtRules("keyframes", (atRule) => {
+        atRule.walkDecls((decl) => {
+          if (decl.value.includes(options.unitType)) {
+            const sourceFile = atRule.source?.input.file || "";
+            const { targetUnit, targetSize } = getTargetUnitAndSize(atRule, decl, options, sourceFile, fileViewportWidth);
+
+            if (targetSize) {
+              decl.value = decl.value.replace(
+                unitRegexp,
+                createUnitReplaceFunction(options, targetUnit!, targetSize),
+              );
+            }
+          }
+        });
+      });
 
       css.walkRules((rule) => {
         const sourceFile = rule.source?.input.file || "";
