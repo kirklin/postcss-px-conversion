@@ -32,7 +32,7 @@ const codeRules: FieldRule[] = [
  */
 const nameRules: FieldRule[] = [
   { required: true, message: "请输入真实姓名" },
-  { pattern: /^(?:[\u4E00-\u9FA5·]{2,16})$/, message: "姓名必须为2-16个中文字符，可包含中间点" },
+  { pattern: /^[\u4E00-\u9FA5·]{2,16}$/, message: "姓名必须为2-16个中文字符，可包含中间点" },
 ];
 
 /**
@@ -42,7 +42,7 @@ const idCardRules: FieldRule[] = [
   { required: true, message: "请输入身份证号" },
   {
     pattern:
-        /^[1-9]\d{5}(?:18|19|20)\d{2}(?:0[1-9]|10|11|12)(?:0[1-9]|[1-2]\d|30|31)\d{3}[\dXx]$/,
+        /^[1-9]\d{5}(?:18|19|20)\d{2}(?:0[1-9]|10|11|12)(?:0[1-9]|[12]\d|30|31)\d{3}[\dX]$/i,
     message: "身份证号格式不正确，请输入合法的身份证号码",
   },
 ];

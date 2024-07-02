@@ -90,27 +90,26 @@ Please adjust these options according to your project's requirements.
 Here's an example configuration that converts pixel values to vw units for a viewport width of 750 pixels:
 
 ```javascript
-// postcss.config.js
-
-module.exports = {
+// postcss.config.mjs
+export default {
   plugins: {
     "postcss-px-conversion": {
-  		unitType: "px",
-  		viewportWidth: 375,
-  		unitPrecision: 5,
-  		allowedProperties: ["*"],
-  		excludedProperties: [],
-  		viewportUnit: 'vw',
-  		fontViewportUnit: 'vw',
-  		selectorBlacklist: [],
-  		minPixelValue: 1,
-  		allowMediaQuery: false,
-  		replaceRules: true,
-  		excludeFiles: [],
-  		includeFiles: [],
-  		enableLandscape: false,
-  		landscapeUnit: 'vw',
-  		landscapeViewportWidth: 568,
+      unitType: "px",
+      viewportWidth: 375,
+      unitPrecision: 5,
+      allowedProperties: ["*"],
+      excludedProperties: [],
+      viewportUnit: "vw",
+      fontViewportUnit: "vw",
+      selectorBlacklist: [],
+      minPixelValue: 1,
+      allowMediaQuery: false,
+      replaceRules: true,
+      excludeFiles: [],
+      includeFiles: [],
+      enableLandscape: false,
+      landscapeUnit: "vw",
+      landscapeViewportWidth: 568,
     },
   },
 };
@@ -125,7 +124,6 @@ Original code migrated from [evrone/postcss-px-to-viewport](https://github.com/e
 If you have any questions or issues, please report them on [GitHub Issues](https://github.com/kirklin/postcss-px-conversion/issues).
 
 **Happy coding!**
-
 
 ## License
 

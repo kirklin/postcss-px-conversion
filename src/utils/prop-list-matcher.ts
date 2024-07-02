@@ -53,16 +53,16 @@ function createPropertiesListMatcher(propList: string[]): ((prop: string) => boo
     }
     return (
       (hasWild
-            || lists.exact.includes(prop)
-            || lists.contain.some(m => prop.includes(m))
-            || lists.startWith.some(m => prop.indexOf(m) === 0)
-            || lists.endWith.some(m => prop.indexOf(m) === prop.length - m.length))
-        && !(
-          lists.notExact.includes(prop)
-            || lists.notContain.some(m => prop.includes(m))
-            || lists.notStartWith.some(m => prop.indexOf(m) === 0)
-            || lists.notEndWith.some(m => prop.indexOf(m) === prop.length - m.length)
-        )
+      || lists.exact.includes(prop)
+      || lists.contain.some(m => prop.includes(m))
+      || lists.startWith.some(m => prop.indexOf(m) === 0)
+      || lists.endWith.some(m => prop.indexOf(m) === prop.length - m.length))
+      && !(
+        lists.notExact.includes(prop)
+        || lists.notContain.some(m => prop.includes(m))
+        || lists.notStartWith.some(m => prop.indexOf(m) === 0)
+        || lists.notEndWith.some(m => prop.indexOf(m) === prop.length - m.length)
+      )
     );
   };
 }
