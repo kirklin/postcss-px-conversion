@@ -40,6 +40,22 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
     postcssPlugin: PLUGIN_NAME,
 
     Once(css: Root, { result }) {
+      let fileViewportWidth: number | undefined;
+
+      // 检查文件开头是否有视口宽度配置
+      if (options.enablePerFileConfig) {
+        css.walkComments((comment) => {
+          if (comment.text.startsWith(options.viewportWidthComment)) {
+            const widthMatch = comment.text.match(/(\d+)/);
+            if (widthMatch) {
+              fileViewportWidth = Number.parseInt(widthMatch[1], 10);
+              // comment.remove(); // 移除配置注释
+              return false; // 停止遍历
+            }
+          }
+        });
+      }
+
       css.walkRules((rule) => {
         const sourceFile = rule.source?.input.file || "";
 
@@ -54,7 +70,7 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         // eslint-disable-next-line ts/ban-ts-comment
         // @ts-expect-error
         if (options.enableLandscape && !rule.parent?.params) {
-          handleLandscapeMode(rule, options, sourceFile, landscapeAtRules, isAllowedProperty, unitRegexp);
+          handleLandscapeMode(rule, options, sourceFile, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
         }
 
         // Validate media query parameters
@@ -67,7 +83,7 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
 
         // Process declarations within the rule
         // 处理规则内的声明
-        processDeclarations(rule, options, sourceFile, isAllowedProperty, unitRegexp, result);
+        processDeclarations(rule, options, sourceFile, isAllowedProperty, unitRegexp, result, fileViewportWidth);
       });
     },
 
@@ -92,6 +108,7 @@ function handleLandscapeMode(
   landscapeAtRules: AtRule[],
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
+  fileViewportWidth?: number,
 ) {
   const landscapeRule = rule.clone().removeAll();
 
@@ -100,7 +117,7 @@ function handleLandscapeMode(
       return;
     }
 
-    const landscapeSize = getLandscapeSize(options, sourceFile);
+    const landscapeSize = getLandscapeSize(options, sourceFile, fileViewportWidth);
     if (!landscapeSize) {
       return;
     }
@@ -124,7 +141,10 @@ function handleLandscapeMode(
  * Get the landscape size based on options.
  * 根据选项获取横向尺寸。
  */
-function getLandscapeSize(options: Options, sourceFile: string): number | undefined {
+function getLandscapeSize(options: Options, sourceFile: string, fileViewportWidth?: number): number | undefined {
+  if (fileViewportWidth) {
+    return fileViewportWidth;
+  }
   if (typeof options.landscapeViewportWidth === "function") {
     return options.landscapeViewportWidth(sourceFile);
   }
@@ -142,6 +162,7 @@ function processDeclarations(
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
   result: Result,
+  fileViewportWidth?: number,
 ) {
   rule.walkDecls((declaration, index: number) => {
     if (!declaration.value.includes(options.unitType) || !isAllowedProperty(declaration.prop)) {
@@ -152,7 +173,7 @@ function processDeclarations(
       return;
     }
 
-    const { targetUnit, targetSize } = getTargetUnitAndSize(rule, declaration, options, sourceFile);
+    const { targetUnit, targetSize } = getTargetUnitAndSize(rule, declaration, options, sourceFile, fileViewportWidth);
     if (!targetSize) {
       return;
     }
@@ -201,22 +222,26 @@ function shouldIgnoreDeclaration(declaration: any, result: any): boolean {
   return false;
 }
 
-/**
- * Get the target unit and size for a declaration.
- * 获取声明的目标单位和尺寸。
- */
-function getTargetUnitAndSize(rule: Rule, declaration: any, options: Options, sourceFile: string) {
+function getTargetUnitAndSize(
+  rule: Rule,
+  declaration: any,
+  options: Options,
+  sourceFile: string,
+  fileViewportWidth?: number,
+) {
+  // eslint-disable-next-line ts/ban-ts-comment
+  // @ts-expect-error
   const parentParams = rule.parent?.params;
 
   if (options.enableLandscape && parentParams && parentParams.includes("landscape")) {
     return {
       targetUnit: options.landscapeUnit,
-      targetSize: getLandscapeSize(options, sourceFile),
+      targetSize: getLandscapeSize(options, sourceFile, fileViewportWidth),
     };
   } else {
     return {
       targetUnit: getUnitFromOptions(declaration.prop, options),
-      targetSize: getViewportSize(options, sourceFile),
+      targetSize: getViewportSize(options, sourceFile, fileViewportWidth),
     };
   }
 }
@@ -225,7 +250,10 @@ function getTargetUnitAndSize(rule: Rule, declaration: any, options: Options, so
  * Get the viewport size based on options.
  * 根据选项获取视口尺寸。
  */
-function getViewportSize(options: Options, sourceFile: string): number | undefined {
+function getViewportSize(options: Options, sourceFile: string, fileViewportWidth?: number): number | undefined {
+  if (fileViewportWidth) {
+    return fileViewportWidth;
+  }
   if (typeof options.viewportWidth === "function") {
     return options.viewportWidth(sourceFile);
   }
@@ -240,10 +268,7 @@ function addLandscapeMediaQuery(css: Root, landscapeAtRules: AtRule[]) {
   const landscapeMediaRule = new (css.constructor as any).AtRule({
     params: "(orientation: landscape)",
     name: "media",
-  });
-
-  landscapeAtRules.forEach((landscapeRule) => {
-    landscapeMediaRule.append(landscapeRule);
+    nodes: landscapeAtRules,
   });
   css.append(landscapeMediaRule);
 }

@@ -56,6 +56,8 @@ module.exports = {
     "postcss-px-conversion": {
       unitType: "px", // The unit to convert from (default is 'px')
       viewportWidth: 375,
+      enablePerFileConfig: true, // Enable per-file configuration
+      viewportWidthComment: "viewport-width", // Comment to specify viewport width
       // Other configuration options...
     },
   },
@@ -82,12 +84,24 @@ You can configure this plugin using various options:
 - `enableLandscape`: Add @media (orientation: landscape) for landscape mode.
 - `landscapeUnit`: The expected unit for landscape mode.
 - `landscapeViewportWidth`: Viewport width for landscape orientation.
+- `enablePerFileConfig`: Enable per-file configuration (default is true).
+- `viewportWidthComment`: Comment to specify viewport width (default is "viewport-width").
 
 Please adjust these options according to your project's requirements.
 
+## Per-File Configuration
+
+This plugin now supports per-file configuration, allowing you to specify different viewport widths for each CSS or SCSS file. To use this feature, simply add a special comment at the beginning of the file:
+
+```css
+/* viewport-width: 1920 */
+```
+
+The plugin will read this comment and use the specified width for unit conversion. This is particularly useful for creating different CSS files for different devices (e.g., PC, tablet, mobile) within the same project.
+
 ## Example
 
-Here's an example configuration that converts pixel values to vw units for a viewport width of 750 pixels:
+Here's an example configuration that converts pixel values to vw units, with a default viewport width of 750 pixels and per-file configuration enabled:
 
 ```javascript
 // postcss.config.mjs
@@ -110,12 +124,34 @@ export default {
       enableLandscape: false,
       landscapeUnit: "vw",
       landscapeViewportWidth: 568,
+      enablePerFileConfig: true,
+      viewportWidthComment: "viewport-width",
     },
   },
 };
 ```
 
-With this configuration, any pixel values in your CSS will be automatically converted to viewport units during PostCSS processing.
+With this configuration, any pixel values in your CSS will be automatically converted to viewport units during PostCSS processing. Additionally, you can specify a different viewport width for each file using a comment.
+
+For example, in a CSS file for desktop devices:
+
+```css
+/* viewport-width: 1920 */
+.header {
+  width: 1600px; /* Will be converted to 83.33333vw */
+}
+```
+
+And in a CSS file for mobile devices:
+
+```css
+/* viewport-width: 375 */
+.header {
+  width: 350px; /* Will be converted to 93.33333vw */
+}
+```
+
+This allows you to generate CSS for multiple devices in a single build while maintaining flexibility and maintainability in your code.
 
 ## Credits
 

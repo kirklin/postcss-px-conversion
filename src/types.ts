@@ -131,4 +131,16 @@ export interface Options {
    * 横向模式下的视口宽度。
    */
   landscapeViewportWidth: number | ((filePath: string) => number | undefined);
+
+  /**
+   * Enable per-file viewport width configuration.
+   * 启用每个文件的视口宽度配置。
+   */
+  enablePerFileConfig: boolean;
+
+  /**
+   * The comment used to specify viewport width in a file.
+   * 用于在文件中指定视口宽度的注释。
+   */
+  viewportWidthComment: string;
 }

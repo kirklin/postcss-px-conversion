@@ -56,6 +56,8 @@ module.exports = {
     "postcss-px-conversion": {
       unitType: "px", // 要从哪种单位转换（默认为'px'）
       viewportWidth: 375,
+      enablePerFileConfig: true, // 启用per-file配置
+      viewportWidthComment: "viewport-width", // 用于指定视口宽度的注释
       // 其他配置选项...
     },
   },
@@ -82,12 +84,24 @@ module.exports = {
 - `enableLandscape`：为横向模式添加@media (orientation: landscape)。
 - `landscapeUnit`：横向模式的期望单位。
 - `landscapeViewportWidth`：横向方向的视口宽度。
+- `enablePerFileConfig`：启用per-file配置（默认为true）。
+- `viewportWidthComment`：用于指定视口宽度的注释（默认为"viewport-width"）。
 
 请根据你的项目需求调整这些选项。
 
+## Per-File 配置
+
+此插件现在支持per-file配置，允许你为每个CSS或SCSS文件指定不同的视口宽度。要使用这个功能，只需在文件的开头添加一个特殊的注释：
+
+```css
+/* viewport-width: 1920 */
+```
+
+插件会读取这个注释并使用指定的宽度来进行单位转换。这对于在同一个项目中为不同的设备（如PC、平板、手机）创建不同的CSS文件特别有用。
+
 ## 示例
 
-以下是一个示例配置，将像素值转换为vw单位，视口宽度为750像素：
+以下是一个示例配置，将像素值转换为vw单位，默认视口宽度为750像素，并启用per-file配置：
 
 ```javascript
 // postcss.config.js
@@ -111,12 +125,34 @@ module.exports = {
       enableLandscape: false,
       landscapeUnit: "vw",
       landscapeViewportWidth: 568,
+      enablePerFileConfig: true,
+      viewportWidthComment: "viewport-width",
     },
   },
 };
 ```
 
-使用这个配置，你的CSS中的像素值将在PostCSS处理期间自动转换为视口单位。
+使用这个配置，你的CSS中的像素值将在PostCSS处理期间自动转换为视口单位。同时，你可以在每个文件中使用注释来指定该文件的特定视口宽度。
+
+例如，在一个针对桌面设备的CSS文件中：
+
+```css
+/* viewport-width: 1920 */
+.header {
+  width: 1600px; /* 将被转换为 83.33333vw */
+}
+```
+
+而在一个针对移动设备的CSS文件中：
+
+```css
+/* viewport-width: 375 */
+.header {
+  width: 350px; /* 将被转换为 93.33333vw */
+}
+```
+
+这样，你就可以在一次构建中生成适配多种设备的CSS，同时保持了代码的灵活性和可维护性。
 
 ## 鸣谢
 
