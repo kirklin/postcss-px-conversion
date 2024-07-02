@@ -27,9 +27,7 @@
     "@kirklin/logger": "^0.0.2",
     "@kirklin/reset-css": "^0.0.6",
     "dotenv": "^16.4.5",
-    "nprogress": "^0.2.0",
     "postcss-px-conversion": "workspace:*",
-    "vant": "^4.9.1",
     "vue": "^3.4.31",
     "vue-router": "^4.4.0"
   },

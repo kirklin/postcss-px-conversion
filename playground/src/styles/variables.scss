@@ -13,15 +13,4 @@
   --bv-line: #EDEDED;
   --bv-bg: #F6F7F9;
   --bv-price: #EB5757;
-  /* 覆盖 Vant 的主色变量 */
-  --van-primary-color: var(--bv-primary);
-
-  /* 设置单元格的上下内边距 */
-  --van-cell-vertical-padding: 14px;
-
-  /* 自定义复选框的大小 */
-  --van-checkbox-size: 14px;
-
-  /* 自定义默认按钮的文字大小 */
-  --van-button-normal-font-size: 16px;
 }
