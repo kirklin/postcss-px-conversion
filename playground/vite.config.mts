@@ -55,7 +55,7 @@ export default defineConfig({
           excludedProperties: [],
           viewportUnit: "vw",
           fontViewportUnit: "vw",
-          selectorBlacklist: [],
+          selectorBlacklist: ["ignore-this"],
           minPixelValue: 1,
           allowMediaQuery: false,
           replaceRules: true,
