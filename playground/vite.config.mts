@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
+import PostcssPXConversion from "postcss-px-conversion";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -44,6 +45,40 @@ export default defineConfig({
     },
   },
   css: {
+    postcss: {
+      plugins: [
+        PostcssPXConversion({
+          unitType: "px",
+          viewportWidth: 750,
+          unitPrecision: 5,
+          allowedProperties: ["*"],
+          excludedProperties: [],
+          viewportUnit: "vw",
+          fontViewportUnit: "vw",
+          selectorBlacklist: [],
+          minPixelValue: 1,
+          allowMediaQuery: false,
+          replaceRules: true,
+          excludeFiles: [],
+          includeFiles: [],
+          enableLandscape: false,
+          landscapeUnit: "vw",
+          landscapeViewportWidth: 568,
+          /**
+           * Enable per-file viewport width configuration.
+           * 启用每个文件的视口宽度配置。
+           */
+          enablePerFileConfig: true,
+
+          /**
+           * The comment used to specify viewport width in a file.
+           * 用于在文件中指定视口宽度的注释。
+           */
+          viewportWidthComment: "viewport-width",
+          // Other configuration options...
+        }),
+      ],
+    },
     preprocessorOptions: {
       scss: {
         additionalData: `

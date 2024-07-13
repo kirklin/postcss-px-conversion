@@ -18,7 +18,7 @@
     "@kirklin/logger": "^0.0.2",
     "@kirklin/reset-css": "^0.0.6",
     "dotenv": "^16.4.5",
-    "postcss-px-conversion": "0.1.1",
+    "postcss-px-conversion": "workspace:*",
     "vue": "^3.4.31",
     "vue-router": "^4.4.0"
   },
