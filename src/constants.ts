@@ -6,7 +6,7 @@ export const IGNORE_NEXT_COMMENT = "px-conversion-ignore-next";
 
 /**
  * Constants for supported unit types.
- * 支持的单位类型的常量。
+ * 支持的单位类型常量。
  */
 export const UNIT_TYPES = {
   PX: "px",
@@ -16,7 +16,7 @@ export const UNIT_TYPES = {
 
 /**
  * Constants for supported viewport unit types.
- * 支持的视口单位类型的联合类型。
+ * 支持的视口单位类型常量。
  */
 export const VIEWPORT_UNIT_TYPES = {
   VW: "vw",
@@ -27,7 +27,7 @@ export const VIEWPORT_UNIT_TYPES = {
 
 /**
  * Constants for supported font viewport unit types.
- * 支持的字体视口单位类型的联合类型。
+ * 支持的字体视口单位类型常量。
  */
 export const FONT_VIEWPORT_UNIT_TYPES = {
   VW: "vw",
