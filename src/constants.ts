@@ -1,18 +1,49 @@
 import type { Options } from "./types";
-import { FontViewportUnitType, UnitType, ViewportUnitType } from "./types";
 
 export const PLUGIN_NAME = "postcss-px-conversion";
 export const IGNORE_PREV_COMMENT = "px-conversion-ignore-prev";
 export const IGNORE_NEXT_COMMENT = "px-conversion-ignore-next";
 
+/**
+ * Constants for supported unit types.
+ * 支持的单位类型的常量。
+ */
+export const UNIT_TYPES = {
+  PX: "px",
+  EM: "em",
+  REM: "rem",
+} as const;
+
+/**
+ * Constants for supported viewport unit types.
+ * 支持的视口单位类型的联合类型。
+ */
+export const VIEWPORT_UNIT_TYPES = {
+  VW: "vw",
+  VH: "vh",
+  VMIN: "vmin",
+  VMAX: "vmax",
+} as const;
+
+/**
+ * Constants for supported font viewport unit types.
+ * 支持的字体视口单位类型的联合类型。
+ */
+export const FONT_VIEWPORT_UNIT_TYPES = {
+  VW: "vw",
+  VH: "vh",
+  VMIN: "vmin",
+  VMAX: "vmax",
+} as const;
+
 export const DEFAULT_OPTIONS: Options = {
-  unitType: UnitType.PX,
+  unitType: UNIT_TYPES.PX,
   viewportWidth: 375,
   unitPrecision: 5,
   allowedProperties: ["*"],
   excludedProperties: [],
-  viewportUnit: ViewportUnitType.VW,
-  fontViewportUnit: FontViewportUnitType.VW,
+  viewportUnit: VIEWPORT_UNIT_TYPES.VW,
+  fontViewportUnit: FONT_VIEWPORT_UNIT_TYPES.VW,
   selectorBlacklist: [],
   minPixelValue: 1,
   allowMediaQuery: false,
@@ -20,7 +51,7 @@ export const DEFAULT_OPTIONS: Options = {
   excludeFiles: [],
   includeFiles: [],
   enableLandscape: false,
-  landscapeUnit: ViewportUnitType.VW,
+  landscapeUnit: VIEWPORT_UNIT_TYPES.VW,
   landscapeViewportWidth: 568,
   /**
    * Enable per-file viewport width configuration.

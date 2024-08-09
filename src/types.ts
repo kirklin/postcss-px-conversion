@@ -1,35 +1,22 @@
+import type { FONT_VIEWPORT_UNIT_TYPES, UNIT_TYPES, VIEWPORT_UNIT_TYPES } from "./constants";
+
 /**
  * Enum for supported unit types.
- * 支持的单位类型的枚举。
+ * 支持的单位类型的联合类型。
  */
-export enum UnitType {
-  PX = "px",
-  // You can add more unit types here
-}
+export type UnitType = typeof UNIT_TYPES[keyof typeof UNIT_TYPES] | (string & object);
 
 /**
  * Enum for supported viewport unit types.
- * 支持的视口单位类型的枚举。
+ * 支持的视口单位类型的联合类型。
  */
-export enum ViewportUnitType {
-  VW = "vw",
-  VH = "vh",
-  VMIN = "vmin",
-  VMAX = "vmax",
-  // You can add more viewport unit types here
-}
+export type ViewportUnitType = typeof VIEWPORT_UNIT_TYPES[keyof typeof VIEWPORT_UNIT_TYPES] | (string & object);
 
 /**
  * Enum for supported font viewport unit types.
- * 支持的字体视口单位类型的枚举。
+ * 支持的字体视口单位类型的联合类型。
  */
-export enum FontViewportUnitType {
-  VW = "vw",
-  VH = "vh",
-  VMIN = "vmin",
-  VMAX = "vmax",
-  // You can add more font viewport unit types here
-}
+export type FontViewportUnitType = typeof FONT_VIEWPORT_UNIT_TYPES[keyof typeof FONT_VIEWPORT_UNIT_TYPES] | (string & object);
 
 /**
  * Configuration options for the pixel to viewport unit conversion.
