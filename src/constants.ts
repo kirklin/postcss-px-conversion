@@ -1,18 +1,17 @@
 import type { Options } from "./types";
-import { FontViewportUnitType, UnitType, ViewportUnitType } from "./types";
 
 export const PLUGIN_NAME = "postcss-px-conversion";
 export const IGNORE_PREV_COMMENT = "px-conversion-ignore-prev";
 export const IGNORE_NEXT_COMMENT = "px-conversion-ignore-next";
 
 export const DEFAULT_OPTIONS: Options = {
-  unitType: UnitType.PX,
+  unitType: 'px',
   viewportWidth: 375,
   unitPrecision: 5,
   allowedProperties: ["*"],
   excludedProperties: [],
-  viewportUnit: ViewportUnitType.VW,
-  fontViewportUnit: FontViewportUnitType.VW,
+  viewportUnit: 'vw',
+  fontViewportUnit: 'vw',
   selectorBlacklist: [],
   minPixelValue: 1,
   allowMediaQuery: false,
@@ -20,7 +19,7 @@ export const DEFAULT_OPTIONS: Options = {
   excludeFiles: [],
   includeFiles: [],
   enableLandscape: false,
-  landscapeUnit: ViewportUnitType.VW,
+  landscapeUnit: 'vw',
   landscapeViewportWidth: 568,
   /**
    * Enable per-file viewport width configuration.

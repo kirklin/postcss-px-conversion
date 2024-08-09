@@ -1,46 +1,13 @@
 /**
- * Enum for supported unit types.
- * 支持的单位类型的枚举。
- */
-export enum UnitType {
-  PX = "px",
-  // You can add more unit types here
-}
-
-/**
- * Enum for supported viewport unit types.
- * 支持的视口单位类型的枚举。
- */
-export enum ViewportUnitType {
-  VW = "vw",
-  VH = "vh",
-  VMIN = "vmin",
-  VMAX = "vmax",
-  // You can add more viewport unit types here
-}
-
-/**
- * Enum for supported font viewport unit types.
- * 支持的字体视口单位类型的枚举。
- */
-export enum FontViewportUnitType {
-  VW = "vw",
-  VH = "vh",
-  VMIN = "vmin",
-  VMAX = "vmax",
-  // You can add more font viewport unit types here
-}
-
-/**
  * Configuration options for the pixel to viewport unit conversion.
  * 像素到视口单位转换的配置选项。
  */
 export interface Options {
   /**
    * The unit to convert to, default is 'px'.
-   * 要转换的单位，默认为'px'。
+   * 要转换的单位，默认为'px'，支持'px' | 其他符合规范的单位。
    */
-  unitType: UnitType;
+  unitType: 'px' | string;
 
   /**
    * The width of the viewport.
@@ -68,15 +35,15 @@ export interface Options {
 
   /**
    * Expected viewport unit.
-   * 期望的视口单位。
+   * 期望的视口单位，默认为'vw'，支持'vw' | 'vh' | 'vmin' | 'vmax' | 其他符合规范的单位。
    */
-  viewportUnit: ViewportUnitType;
+  viewportUnit: 'vw' | 'vh' | 'vmin' | 'vmax' | string;
 
   /**
    * Expected font unit.
-   * 字体的期望单位。
+   * 字体的期望单位，默认为'vw', 支持'vw' | 'vh' | 'vmin' | 'vmax' | 其他符合规范的单位。
    */
-  fontViewportUnit: FontViewportUnitType;
+  fontViewportUnit: 'vw' | 'vh' | 'vmin' | 'vmax' | string;
 
   /**
    * Selectors to ignore, can include strings or regular expressions.
@@ -122,9 +89,9 @@ export interface Options {
 
   /**
    * Expected unit for landscape mode.
-   * 横向模式下的期望单位。
+   * 横向模式下的期望单位。默认为'vw'，支持'vw' | 'vh' | 'vmin' | 'vmax' | 其他符合规范的单位。
    */
-  landscapeUnit: ViewportUnitType;
+  landscapeUnit: 'vw' | 'vh' | 'vmin' | 'vmax' | string;
 
   /**
    * Viewport width for landscape orientation.
@@ -144,3 +111,4 @@ export interface Options {
    */
   viewportWidthComment: string;
 }
+
