@@ -3,7 +3,7 @@ import { defineConfig } from "vite";
 import Vue from "@vitejs/plugin-vue";
 import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
-import PostcssPXConversion from "postcss-px-conversion";
+import PostcssPXConversion from "../src/index";
 
 // https://vitejs.dev/config/
 export default defineConfig({

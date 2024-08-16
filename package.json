@@ -45,7 +45,6 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prepublishOnly": "npm run build",
-    "postinstall": "npm run build",
     "release": "bumpp",
     "start": "esno src/index.ts",
     "test": "vitest",
