@@ -64,6 +64,42 @@ module.exports = {
 };
 ```
 
+### Nuxt3 集成
+
+`nuxt.config.ts`
+
+```javascript
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  postcss: {
+    plugins: {
+      "postcss-px-conversion": {
+        unitType: "px", // 要从哪种单位转换（默认为'px'）
+        viewportWidth: 375,
+        unitPrecision: 10,
+        viewportUnit: "vw",
+        minPixelValue: 1,
+        includeFiles: [/\/pages\//],
+        excludeFiles: [/node_modules/, /pages\/active\/index\.vue/]
+      }
+    }
+  }
+});
+```
+
+目录结构
+
+```
+- package.json
+- pages
+ - index
+    - index.vue
+ - active
+    -index.vue
+```
+
+index 页面会被自动转换单位，active页面不会
+
 ## 配置选项
 
 你可以使用各种选项来配置这个插件：
