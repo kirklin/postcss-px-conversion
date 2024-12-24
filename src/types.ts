@@ -113,6 +113,9 @@ export interface Options {
   /**
    * Files to ignore as an array of regular expressions.
    * 要忽略的文件，作为正则表达式的数组。
+   * @example
+   *  [/node_modules/]
+   *  [/node_modules/, /pages\/active\/index\.vue/]
    */
   excludeFiles: (string | RegExp)[];
 

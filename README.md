@@ -64,6 +64,42 @@ module.exports = {
 };
 ```
 
+### Used in nuxt3
+
+`nuxt.config.ts`
+
+```javascript
+// https://nuxt.com/docs/api/configuration/nuxt-config
+export default defineNuxtConfig({
+  postcss: {
+    plugins: {
+      "postcss-px-conversion": {
+        unitType: "px", // The unit to convert from (default is 'px')
+        viewportWidth: 375,
+        unitPrecision: 10,
+        viewportUnit: "vw",
+        minPixelValue: 1,
+        includeFiles: [/\/pages\//],
+        excludeFiles: [/node_modules/, /pages\/active\/index\.vue/]
+      }
+    }
+  }
+});
+```
+
+directory structure
+
+```
+- package.json
+- pages
+ - index
+    - index.vue
+ - active
+    -index.vue
+```
+
+The `index page` will be automatically converted, while the `active page` will not
+
 ## Configuration Options
 
 You can configure this plugin using various options:
