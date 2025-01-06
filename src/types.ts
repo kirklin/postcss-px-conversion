@@ -93,6 +93,12 @@ export interface Options {
   selectorBlacklist: (string | RegExp)[];
 
   /**
+   * Selectors only included, can include strings or regular expressions.
+   * 要包含的选择器，可以包含字符串或正则表达式。
+   */
+  selectorWhitelist: (string | RegExp)[];
+
+  /**
    * Minimum pixel value to replace.
    * 进行替换的最小像素值。
    */

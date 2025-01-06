@@ -45,6 +45,7 @@ export const DEFAULT_OPTIONS: Options = {
   viewportUnit: VIEWPORT_UNIT_TYPES.VW,
   fontViewportUnit: FONT_VIEWPORT_UNIT_TYPES.VW,
   selectorBlacklist: [],
+  selectorWhitelist: [],
   minPixelValue: 1,
   allowMediaQuery: false,
   replaceRules: true,

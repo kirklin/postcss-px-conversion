@@ -6,8 +6,8 @@ import {
   doesDeclarationExist,
   getUnitFromOptions,
   getUnitRegexp,
-  isBlacklistedSelector,
-  shouldExclude,
+  shouldExcludeFile,
+  shouldExcludeSelector,
   validateMediaQueryParams,
 } from "./utils";
 import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
@@ -76,7 +76,7 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
 
         // Check if the rule should be excluded based on file path or selector
         // 检查是否应该根据文件路径或选择器排除该规则
-        if (shouldExclude(options, sourceFile) || isBlacklistedSelector(rule.selector, options.selectorBlacklist)) {
+        if (shouldExcludeFile(options, sourceFile) || shouldExcludeSelector(options, rule.selector)) {
           return undefined;
         }
 
