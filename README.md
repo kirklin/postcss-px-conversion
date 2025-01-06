@@ -112,6 +112,7 @@ You can configure this plugin using various options:
 - `viewportUnit`: The expected viewport unit (vw, vh, vmin, vmax).
 - `fontViewportUnit`: The expected font viewport unit.
 - `selectorBlacklist`: Selectors to ignore (strings or regular expressions).
+- `selectorWhitelist`: Selectors only included (strings or regular expressions).
 - `minPixelValue`: Minimum pixel value to replace.
 - `allowMediaQuery`: Allow px to vw conversion in media queries.
 - `replaceRules`: Replace rules containing vw instead of adding fallbacks.
@@ -152,6 +153,7 @@ export default {
       viewportUnit: "vw",
       fontViewportUnit: "vw",
       selectorBlacklist: [],
+      selectorWhitelist: [],
       minPixelValue: 1,
       allowMediaQuery: false,
       replaceRules: true,

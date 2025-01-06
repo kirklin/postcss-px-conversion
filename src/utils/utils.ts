@@ -1,7 +1,7 @@
 import type { ContainerWithChildren } from "postcss/lib/container";
 import type { Options } from "../types";
 
-export function shouldExclude(options: Options, filePath: string): boolean {
+export function shouldExcludeFile(options: Options, filePath: string): boolean {
   const isExcluded = options.excludeFiles.some(exclude =>
     (typeof exclude === "string" && filePath.includes(exclude))
     || (exclude instanceof RegExp && exclude.test(filePath)),
@@ -21,8 +21,22 @@ export function shouldExclude(options: Options, filePath: string): boolean {
   return false;
 }
 
-export function isBlacklistedSelector(selector: string, blacklist: (string | RegExp)[]): boolean {
-  return blacklist.some(item =>
+export function shouldExcludeSelector(options: Options, selector: string): boolean {
+  const isInBlacklist = isListedSelector(selector, options.selectorBlacklist);
+
+  if (isInBlacklist) {
+    return true;
+  }
+
+  if (options.selectorWhitelist.length > 0) {
+    return !isListedSelector(selector, options.selectorWhitelist);
+  }
+
+  return false;
+}
+
+export function isListedSelector(selector: string, list: (string | RegExp)[]): boolean {
+  return list.some(item =>
     (typeof item === "string" && selector.includes(item))
     || (item instanceof RegExp && item.test(selector)),
   );
