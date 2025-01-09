@@ -1,7 +1,7 @@
 import { presetAttributify, presetIcons, presetUno, transformerDirectives, transformerVariantGroup } from "unocss";
-import { defineConfig } from "unocss/vite";
 import presetChinese from "unocss-preset-chinese";
 import presetEase from "unocss-preset-ease";
+import { defineConfig } from "unocss/vite";
 
 export default defineConfig({
   presets: [

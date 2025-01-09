@@ -1,5 +1,6 @@
 import type { AtRule, Plugin, Result, Root, Rule } from "postcss";
 import type { Options } from "./types";
+import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 import {
   createPropertiesListMatcher,
   createUnitReplaceFunction,
@@ -10,7 +11,6 @@ import {
   shouldExcludeSelector,
   validateMediaQueryParams,
 } from "./utils";
-import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 
 /**
  * Create a PostCSS plugin for converting pixel units to viewport units.
@@ -225,8 +225,8 @@ function shouldIgnoreDeclaration(declaration: any, result: any): boolean {
   if (nextComment && nextComment.type === "comment" && nextComment.text === IGNORE_PREV_COMMENT) {
     if (/\n/.test(nextComment.raws.before!)) {
       result.warn(
-          `Unexpected comment /* ${IGNORE_PREV_COMMENT} */ must be after declaration at the same line.`,
-          { node: nextComment },
+        `Unexpected comment /* ${IGNORE_PREV_COMMENT} */ must be after declaration at the same line.`,
+        { node: nextComment },
       );
     } else {
       nextComment.remove();

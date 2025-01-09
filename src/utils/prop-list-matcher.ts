@@ -43,4 +43,4 @@ function createPropertiesListMatcher(propList: string[]): (prop: string) => bool
   };
 }
 
-export { filterPropertiesList, createPropertiesListMatcher };
+export { createPropertiesListMatcher, filterPropertiesList };

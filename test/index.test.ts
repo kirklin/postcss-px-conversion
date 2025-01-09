@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { shouldExcludeSelector } from "../src/utils";
 import { DEFAULT_OPTIONS } from "../src/constants";
+import { shouldExcludeSelector } from "../src/utils";
 
 describe("selector whitelist and blacklist", () => {
   it("should handle empty whitelist and blacklist", () => {
