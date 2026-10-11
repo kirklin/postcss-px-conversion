@@ -82,7 +82,9 @@ export interface Options {
    * 默认为 "vw"。支持 "vw"、"vh"、"vmin"、"vmax"，或其他有效的自定义字符串类型。
    *
    * "px" converts from unitType "rem" and "rem" from unitType "px", both through rootValue.
+   * "rpx" takes `value / viewportWidth * 750`.
    * "px" 由 unitType "rem" 换算，"rem" 由 unitType "px" 换算，都按 rootValue 计算。
+   * "rpx" 按 `数值 / viewportWidth * 750` 计算。
    */
   viewportUnit: ViewportUnitType;
 
@@ -94,7 +96,9 @@ export interface Options {
    * 默认为 "vw"。支持 "vw"、"vh"、"vmin"、"vmax"，或其他有效的自定义字符串类型。
    *
    * "px" converts from unitType "rem" and "rem" from unitType "px", both through rootValue.
+   * "rpx" takes `value / viewportWidth * 750`.
    * "px" 由 unitType "rem" 换算，"rem" 由 unitType "px" 换算，都按 rootValue 计算。
+   * "rpx" 按 `数值 / viewportWidth * 750` 计算。
    */
   fontViewportUnit: FontViewportUnitType;
 
@@ -157,7 +161,9 @@ export interface Options {
    * 默认为 "vw"。支持 "vw"、"vh"、"vmin"、"vmax" 或其他符合规范的单位。
    *
    * "px" converts from unitType "rem" and "rem" from unitType "px", both through rootValue.
+   * "rpx" takes `value / landscapeViewportWidth * 750`.
    * "px" 由 unitType "rem" 换算，"rem" 由 unitType "px" 换算，都按 rootValue 计算。
+   * "rpx" 按 `数值 / landscapeViewportWidth * 750` 计算。
    */
   landscapeUnit: ViewportUnitType;
 

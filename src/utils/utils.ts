@@ -91,9 +91,10 @@ export function createUnitReplaceFunction(opts: Options, targetUnit: string | nu
 
 /**
  * The number a value in unitType is multiplied by to convert it to targetUnit. px and rem convert into each other
- * through rootValue; other units scale with the design width, which is read only for them. Undefined leaves the value as it is.
+ * through rootValue; other units scale with the design width, which is read only for them: rpx divides it into
+ * 750 parts, viewport units into 100. Undefined leaves the value as it is.
  * 源单位的数值换算成目标单位时要乘的系数。px 和 rem 之间按 rootValue 换算；其他单位按设计稿宽度换算，
- * 只有这时才读取宽度。返回 undefined 时数值保持不变。
+ * 只有这时才读取宽度：rpx 把宽度分成 750 份，视口单位分成 100 份。返回 undefined 时数值保持不变。
  */
 export function getUnitFactor(opts: Options, targetUnit: string, getWidth: () => number | undefined): number | undefined {
   const unit = targetUnit.toLowerCase();
@@ -104,7 +105,7 @@ export function getUnitFactor(opts: Options, targetUnit: string, getWidth: () =>
     return 1 / opts.rootValue;
   }
   const width = getWidth();
-  return width ? 100 / width : undefined;
+  return width ? (unit === "rpx" ? 750 : 100) / width : undefined;
 }
 
 export function doesDeclarationExist(declarations: ContainerWithChildren | undefined, property: string, value: string): boolean | undefined {

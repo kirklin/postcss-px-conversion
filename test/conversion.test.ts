@@ -91,6 +91,19 @@ describe("px and rem through rootValue", () => {
   });
 });
 
+describe("rpx", () => {
+  it("converts px to rpx with 750rpx per viewportWidth", () => {
+    expect(convert(".a { width: 10px }", { viewportUnit: "rpx" })).toBe(".a { width: 20rpx }");
+    expect(convert(".a { width: 10px }", { viewportUnit: "rpx", viewportWidth: 750 })).toBe(".a { width: 10rpx }");
+  });
+
+  it("does not turn the converted unit back into the source unit", () => {
+    expect(convert(".a { width: 10px }", { viewportUnit: "rpx", replaceRules: false })).toBe(
+      ".a { width: 10px; width: 20rpx }",
+    );
+  });
+});
+
 describe("roundNumberToPrecision", () => {
   it("rounds half up in decimal", () => {
     expect(roundNumberToPrecision(1.005, 2)).toBe(1.01);
