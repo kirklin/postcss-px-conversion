@@ -43,9 +43,9 @@ describe("properties", () => {
     expect(convert(css, { allowedProperties: ["!width"] })).toBe(css);
   });
 
-  it("matches property names exactly as written", () => {
+  it("matches standard properties in any case and custom properties exactly", () => {
     expect(convert(".a { WIDTH: 15px; --Gap: 15px }", { allowedProperties: ["width", "--gap"] })).toBe(
-      ".a { WIDTH: 15px; --Gap: 15px }",
+      ".a { WIDTH: 4vw; --Gap: 15px }",
     );
   });
 });

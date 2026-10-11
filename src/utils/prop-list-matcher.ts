@@ -28,16 +28,19 @@ function createPropertiesListMatcher(propList: string[]): (prop: string) => bool
       return true;
     }
 
-    const isIncluded = hasWild
-      || lists.exact.includes(prop)
-      || lists.contain.some(m => prop.includes(m))
-      || lists.startWith.some(m => prop.startsWith(m))
-      || lists.endWith.some(m => prop.endsWith(m));
+    // Custom properties are case-sensitive, standard ones are not.
+    const name = prop.startsWith("--") ? prop : prop.toLowerCase();
 
-    const isExcluded = lists.notExact.includes(prop)
-      || lists.notContain.some(m => prop.includes(m))
-      || lists.notStartWith.some(m => prop.startsWith(m))
-      || lists.notEndWith.some(m => prop.endsWith(m));
+    const isIncluded = hasWild
+      || lists.exact.includes(name)
+      || lists.contain.some(m => name.includes(m))
+      || lists.startWith.some(m => name.startsWith(m))
+      || lists.endWith.some(m => name.endsWith(m));
+
+    const isExcluded = lists.notExact.includes(name)
+      || lists.notContain.some(m => name.includes(m))
+      || lists.notStartWith.some(m => name.startsWith(m))
+      || lists.notEndWith.some(m => name.endsWith(m));
 
     return isIncluded && !isExcluded;
   };
