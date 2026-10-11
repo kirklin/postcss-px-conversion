@@ -2,21 +2,28 @@ import type { AtRule, Node, Rule } from "postcss";
 import type { ContainerWithChildren } from "postcss/lib/container";
 import type { Options } from "../types";
 
+/**
+ * Whether a string or regular expression from a list matches the text. A regular expression with the `g` or `y` flag
+ * remembers where its last match ended, so it is tested from the start every time.
+ * 列表里的字符串或正则表达式是否匹配这段文字。带 `g` 或 `y` 标志的正则表达式会记住上一次匹配结束的位置，所以每次都从头匹配。
+ */
+export function matchesPattern(text: string, pattern: string | RegExp): boolean {
+  if (typeof pattern === "string") {
+    return text.includes(pattern);
+  }
+  pattern.lastIndex = 0;
+  return pattern.test(text);
+}
+
 export function shouldExcludeFile(options: Options, filePath: string): boolean {
-  const isExcluded = options.excludeFiles.some(exclude =>
-    (typeof exclude === "string" && filePath.includes(exclude))
-    || (exclude instanceof RegExp && exclude.test(filePath)),
-  );
+  const isExcluded = options.excludeFiles.some(exclude => matchesPattern(filePath, exclude));
 
   if (isExcluded) {
     return true;
   }
 
   if (options.includeFiles.length > 0) {
-    return !options.includeFiles.some(include =>
-      (typeof include === "string" && filePath.includes(include))
-      || (include instanceof RegExp && include.test(filePath)),
-    );
+    return !options.includeFiles.some(include => matchesPattern(filePath, include));
   }
 
   return false;
@@ -37,10 +44,7 @@ export function shouldExcludeSelector(options: Options, selector: string): boole
 }
 
 export function isListedSelector(selector: string, list: (string | RegExp)[]): boolean {
-  return list.some(item =>
-    (typeof item === "string" && selector.includes(item))
-    || (item instanceof RegExp && item.test(selector)),
-  );
+  return list.some(item => matchesPattern(selector, item));
 }
 
 export function getUnitFromOptions(prop: string | string[], opts: Options): string {

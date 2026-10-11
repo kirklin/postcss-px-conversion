@@ -65,6 +65,12 @@ describe("selectors", () => {
     );
   });
 
+  it("tests a global regular expression from the start every time", () => {
+    const css = ".skip-a { width: 15px } .skip-b { width: 15px }";
+    expect(convert(css, { selectorBlacklist: [/^\.skip-/g] })).toBe(css);
+    expect(convert(css, { selectorWhitelist: [/^\.skip-/g] })).toBe(".skip-a { width: 4vw } .skip-b { width: 4vw }");
+  });
+
   it("lets selectorBlacklist win over selectorWhitelist", () => {
     expect(convert(".convert-ignore { width: 15px }", { selectorWhitelist: ["convert"], selectorBlacklist: ["ignore"] })).toBe(
       ".convert-ignore { width: 15px }",
@@ -91,6 +97,12 @@ describe("files", () => {
     expect(convert(css, { includeFiles: [/\/pages\//] }, "/project/src/pages/index.css")).toBe(".a { width: 4vw }");
     expect(convert(css, { includeFiles: [/\/pages\//] }, "/project/src/components/button.css")).toBe(css);
     expect(convert(css, { includeFiles: [/\/pages\//] }, undefined)).toBe(css);
+  });
+
+  it("tests a global regular expression from the start every time", () => {
+    const css = ".a { width: 15px; height: 15px }";
+    expect(convert(css, { excludeFiles: [/node_modules/g] }, "/project/node_modules/lib/index.css")).toBe(css);
+    expect(convert(css, { includeFiles: [/pages/g] }, "/project/src/pages/index.css")).toBe(".a { width: 4vw; height: 4vw }");
   });
 
   it("checks each declaration against the file it came from", () => {
