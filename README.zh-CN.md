@@ -23,179 +23,226 @@
 [code-style-url]: https://github.com/kirklin/eslint-config/
 
 <div align='center'>
-<a href="README.md">English</a>| <b>简体中文</b>
+<a href="README.md">English</a> | <b>简体中文</b>
 </div>
 
-这是一个将像素单位转换为视口单位（vw、vh、vmin、vmax）的PostCSS插件，与最新版本的PostCSS兼容。
+这是一个把像素单位转换成视口单位（vw、vh、vmin、vmax）的 PostCSS 插件，也能把 px 转成 rem、rem 转成 px、px 转成 rpx，适用于 PostCSS 8。
 
 ## 安装
 
-要使用这个插件，你需要在你的项目中设置好PostCSS。如果你还没有设置PostCSS，你可以通过运行以下命令来安装：
-
 ```bash
-npm install postcss --save
-```
-
-接下来，安装`postcss-px-conversion`插件：
-
-```bash
-npm install postcss-px-conversion --save
+npm install postcss postcss-px-conversion --save-dev
 ```
 
 ## 使用
 
-要在你的PostCSS配置中使用这个插件，将其添加到PostCSS插件列表中，同时加上所需的配置选项。
-
-以下是在`postcss.config.js`中的示例配置：
+把插件加到 PostCSS 配置里：
 
 ```javascript
-// postcss.config.js
-
-module.exports = {
+// postcss.config.mjs
+export default {
   plugins: {
     "postcss-px-conversion": {
-      unitType: "px", // 要从哪种单位转换（默认为'px'）
       viewportWidth: 375,
-      enablePerFileConfig: true, // 启用per-file配置
-      viewportWidthComment: "viewport-width", // 用于指定视口宽度的注释
-      // 其他配置选项...
     },
   },
 };
 ```
 
-### Nuxt3 集成
+```css
+/* 输入 */
+.header {
+  width: 350px;
+  font-size: 15px;
+}
+
+/* 输出 */
+.header {
+  width: 93.33333vw;
+  font-size: 4vw;
+}
+```
+
+### 在 Nuxt 3 中使用
 
 `nuxt.config.ts`
 
 ```javascript
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   postcss: {
     plugins: {
       "postcss-px-conversion": {
-        unitType: "px", // 要从哪种单位转换（默认为'px'）
         viewportWidth: 375,
         unitPrecision: 10,
         viewportUnit: "vw",
         minPixelValue: 1,
         includeFiles: [/\/pages\//],
-        excludeFiles: [/node_modules/, /pages\/active\/index\.vue/]
-      }
-    }
-  }
+        excludeFiles: [/node_modules/, /pages\/active\/index\.vue/],
+      },
+    },
+  },
 });
 ```
 
-目录结构
+在下面的目录结构里，`index` 页面会被转换，`active` 页面不会：
 
 ```
 - package.json
 - pages
- - index
+  - index
     - index.vue
- - active
-    -index.vue
+  - active
+    - index.vue
 ```
 
-index 页面会被自动转换单位，active页面不会
+### rem 转 px
 
-## 配置选项
-
-你可以使用各种选项来配置这个插件：
-
-- `unitType`：要从哪种单位转换（默认为'px'）。
-- `viewportWidth`：视口的宽度。
-- `unitPrecision`：vw单位的小数位数。
-- `allowedProperties`：要转换为vw的CSS属性列表。
-- `excludedProperties`：要排除在转换之外的CSS属性列表。
-- `viewportUnit`：期望的视口单位（vw、vh、vmin、vmax）。
-- `fontViewportUnit`：期望的字体视口单位。
-- `selectorBlacklist`：要忽略的选择器（字符串或正则表达式）。
-- `minPixelValue`：要替换的最小像素值。
-- `allowMediaQuery`：在媒体查询中允许px到vw的转换。
-- `replaceRules`：替换包含vw的规则而不是添加回退规则。
-- `excludeFiles`：要忽略的文件（作为正则表达式数组）。
-- `includeFiles`：只转换匹配的文件（作为正则表达式数组）。
-- `enableLandscape`：为横向模式添加@media (orientation: landscape)。
-- `landscapeUnit`：横向模式的期望单位。
-- `landscapeViewportWidth`：横向方向的视口宽度。
-- `enablePerFileConfig`：启用per-file配置（默认为true）。
-- `viewportWidthComment`：用于指定视口宽度的注释（默认为"viewport-width"）。
-
-请根据你的项目需求调整这些选项。
-
-## Per-File 配置
-
-此插件现在支持per-file配置，允许你为每个CSS或SCSS文件指定不同的视口宽度。要使用这个功能，只需在文件的开头添加一个特殊的注释：
-
-```css
-/* viewport-width: 1920 */
-```
-
-插件会读取这个注释并使用指定的宽度来进行单位转换。这对于在同一个项目中为不同的设备（如PC、平板、手机）创建不同的CSS文件特别有用。
-
-## 示例
-
-以下是一个示例配置，将像素值转换为vw单位，默认视口宽度为750像素，并启用per-file配置：
+rem 的大小跟着网页 `<html>` 元素的字号走。界面如果要显示在别人的网页里，比如浏览器扩展放在 shadow root 里的内容脚本界面，可以把 rem 转成 px，在哪个网页上都保持同样大小：
 
 ```javascript
-// postcss.config.js
+// postcss.config.mjs
+import postcssPxConversion from "postcss-px-conversion";
 
-module.exports = {
-  plugins: {
-    "postcss-px-conversion": {
-      unitType: "px",
-      viewportWidth: 750,
-      unitPrecision: 5,
-      allowedProperties: ["*"],
-      excludedProperties: [],
-      viewportUnit: "vw",
-      fontViewportUnit: "vw",
-      selectorBlacklist: [],
-      minPixelValue: 1,
-      allowMediaQuery: false,
-      replaceRules: true,
-      excludeFiles: [],
-      includeFiles: [],
-      enableLandscape: false,
-      landscapeUnit: "vw",
-      landscapeViewportWidth: 568,
-      enablePerFileConfig: true,
-      viewportWidthComment: "viewport-width",
-    },
-  },
+export default {
+  plugins: [
+    postcssPxConversion({
+      unitType: "rem",
+      viewportUnit: "px",
+      fontViewportUnit: "px",
+      minPixelValue: 0,
+      allowMediaQuery: true,
+    }),
+  ],
 };
 ```
 
-使用这个配置，你的CSS中的像素值将在PostCSS处理期间自动转换为视口单位。同时，你可以在每个文件中使用注释来指定该文件的特定视口宽度。
+`rootValue`（默认 16）是 1rem 对应的 px 数。`minPixelValue: 0` 让 `0.25rem` 这样的小数值也会转换，`allowMediaQuery: true` 让媒体查询里的规则也会转换，比如 Tailwind CSS 的断点。
 
-例如，在一个针对桌面设备的CSS文件中：
+### px 转 rem 和 px 转 rpx
+
+```javascript
+postcssPxConversion({ viewportUnit: "rem" }); // 24px -> 1.5rem，按 rootValue 换算
+postcssPxConversion({ viewportUnit: "rpx", viewportWidth: 375 }); // 10px -> 20rpx，屏幕宽度是 750rpx
+```
+
+### 不同断点使用不同的设计稿宽度
+
+`viewportWidth` 可以是一个函数。它会收到文件路径和声明所在的位置：属性名、所在规则的选择器，以及包住它的 at-rule（从最外层到最内层）。函数返回 undefined 时，这条声明保持不变。
+
+```javascript
+postcssPxConversion({
+  allowMediaQuery: true,
+  viewportWidth: (file, { atRules }) => {
+    const desktop = atRules.some(atRule => atRule.name === "media" && atRule.params.includes("min-width: 768px"));
+    return desktop ? 1440 : 375;
+  },
+});
+```
+
+## 配置项
+
+- `unitType`，默认 `"px"`：要转换的源单位，`viewportWidth` 和 `landscapeViewportWidth` 也以这个单位计。
+- `viewportWidth`，默认 `375`：设计稿宽度，或者按文件和位置返回宽度的函数。视口单位和 rpx 会用到它。
+- `rootValue`，默认 `16`：1rem 等于多少 px，rem 转 px、px 转 rem 时使用。
+- `unitPrecision`，默认 `5`：转换结果保留的小数位数。
+- `allowedProperties`，默认 `["*"]`：要转换的属性。`*` 表示全部，`*name*`、`name*`、`*name` 匹配属性名的一部分，以 `!` 开头表示排除。
+- `excludedProperties`，默认 `[]`：一律不转换的属性，写法和 `allowedProperties` 相同，不加 `!`。
+- `viewportUnit`，默认 `"vw"`：要转换成的目标单位。
+- `fontViewportUnit`，默认 `"vw"`：属性名包含 `font` 的属性要转换成的目标单位。
+- `selectorBlacklist`，默认 `[]`：选择器包含这些字符串或匹配这些正则表达式的规则不转换，嵌套在它们里面的规则也不转换。
+- `selectorWhitelist`，默认 `[]`：不为空时，只转换自身选择器或外层规则选择器匹配其中一项的规则。
+- `minPixelValue`，默认 `1`：小于等于这个数值（以 `unitType` 计）的值不转换。
+- `allowMediaQuery`，默认 `false`：是否转换 `@media` 和 `@container` 里的规则。
+- `replaceRules`，默认 `true`：是否直接替换原值。为 false 时，在原声明后面添加一条转换后的声明。
+- `excludeFiles`，默认 `[]`：不转换的文件，用字符串或正则表达式按路径匹配。
+- `includeFiles`，默认 `[]`：不为空时，只转换路径匹配的文件。
+- `enableLandscape`，默认 `false`：添加一个 `@media (orientation: landscape)` 块，里面是按 `landscapeViewportWidth` 转换的值。
+- `landscapeUnit`，默认 `"vw"`：横屏时要转换成的目标单位。
+- `landscapeViewportWidth`，默认 `568`：横屏时的设计稿宽度，也可以像 `viewportWidth` 一样写成函数。
+- `enablePerFileConfig`，默认 `true`：从注释里读取每个文件自己的宽度，见下文。
+- `viewportWidthComment`，默认 `"viewport-width"`：文件宽度注释的开头文字。
+
+设为 undefined 的配置项使用默认值。
+
+## 换算规则
+
+vw 等视口单位按 `数值 / viewportWidth * 100` 计算，vh、svw、cqw 等其他单位也一样。rpx 按 `数值 / viewportWidth * 750` 计算。rem 转 px 乘以 `rootValue`，px 转 rem 除以 `rootValue`；其他单位转 px 或 rem 不支持，因为无法确定它们对应多少 px。单位组合不支持、源单位和目标单位相同或者配置项的值无效时，创建插件时就会报错。宽度函数返回 0 或负数时也会报错。
+
+插件转换样式规则、关键帧和 `@position-try` 里声明值中的数字，以下内容保持不变：
+
+- 字符串和 `url()`
+- 名字里的数字，比如 `var(--gap-10px)`
+- at-rule 的条件，比如 `@media (min-width: 768px)`
+- `@page`、`@property` 和 `@font-face` 里的描述符
+
+类型挂在默认导出上，比如 `postcssPxConversion.Options` 和 `postcssPxConversion.ConversionContext`。
+
+## 按文件设置宽度
+
+开启 `enablePerFileConfig` 后，文件里的一条注释可以设置这个文件里声明的宽度；多个文件合并成一份样式后也按各自的文件生效。宽度取注释开头文字后面的第一个数，必须大于 0：
 
 ```css
 /* viewport-width: 1920 */
 .header {
-  width: 1600px; /* 将被转换为 83.33333vw */
+  width: 1600px; /* 转换为 83.33333vw */
 }
 ```
-
-而在一个针对移动设备的CSS文件中：
 
 ```css
 /* viewport-width: 375 */
 .header {
-  width: 350px; /* 将被转换为 93.33333vw */
+  width: 350px; /* 转换为 93.33333vw */
 }
 ```
 
-这样，你就可以在一次构建中生成适配多种设备的CSS，同时保持了代码的灵活性和可维护性。
+这样一次构建就能生成桌面、平板和手机各自的样式，再用媒体查询加载：
+
+```html
+<link rel="stylesheet" href="desktop.css" media="(min-width: 1280px)" />
+<link rel="stylesheet" href="mobile.css" media="(max-width: 1279px)" />
+```
+
+## 不转换某条声明
+
+在声明前面写 `px-conversion-ignore-next` 注释，或者在声明后面同一行写 `px-conversion-ignore-prev` 注释，这条声明就保持不变，注释会从输出里删掉。
+
+```css
+.ignore {
+  /* px-conversion-ignore-next */
+  width: 10px;
+  height: 10px; /* px-conversion-ignore-prev */
+}
+```
+
+## 横屏
+
+开启 `enableLandscape` 后，插件把会变化的声明复制到一个 `@media (orientation: landscape)` 块里，按 `landscapeUnit` 和 `landscapeViewportWidth` 转换。复制的是直接写在样式里或者 `@layer` 块里的规则，嵌套在里面的规则保持原来的位置，复制过来的每条声明都和转换时经过同样的检查。这个块放在样式的末尾，或者原规则所在 `@layer` 的末尾。自己写在横屏媒体查询里的规则，在开启 `allowMediaQuery` 时会按横屏设置转换。
+
+## 从 0.1 升级
+
+配置项的名字和 0.1 相同，以下行为有变化：
+
+- `allowMediaQuery` 为 false 时，`@layer`、`@supports`、`@scope` 等 at-rule 里的规则也会转换；这个配置项只管 `@media` 和 `@container`，嵌套在规则里的 `@media` 和 `@container` 也一样。Tailwind CSS 4 把所有规则都放在 `@layer` 里，0.1 在这种情况下什么都不转换。
+- `excludedProperties` 开始生效。
+- 嵌套在 `selectorBlacklist` 排除的规则里的规则也不转换；嵌套在 `selectorWhitelist` 列出的规则里的规则会转换。
+- 关键帧和其他规则经过同样的检查：`allowedProperties`、`excludedProperties`、`excludeFiles`、`includeFiles`、`allowMediaQuery`、忽略注释和 `replaceRules`。
+- 忽略注释在嵌套规则里也生效。
+- 选择器名单和文件名单里带 `g` 标志的正则表达式每次都能正确匹配。
+- 名字里的数字保持不变，带转义引号的字符串整个保持不变，`10PX` 这样的大写单位和 `1e2px` 这样的数字会转换。
+- 数值按十进制四舍五入，1.005 保留两位小数得到 1.01。
+- `enableLandscape` 可以在 PostCSS 8 下使用，0.1 会报错 “AtRule is not a constructor”。横屏副本保留嵌套结构和所在的 `@layer`，只包含会变化的声明，不包含带忽略注释的声明，也不会带到下一个文件里。
+- 文件宽度注释只对所在的文件生效，并且支持小数。
+- `viewportUnit` 设为 `px`、`rem` 或 `rpx` 时，按 `rootValue` 或每 `viewportWidth` 对应 750 换算。
+- 开启 `replaceRules` 时，即使规则里已经有转换后的同名声明，原值也会转换。
+- `@position-try` 里的声明会转换。
+- 设为 undefined 的配置项使用默认值，配置项的值无效时会报错。
+- 函数形式的 `viewportWidth` 和 `landscapeViewportWidth` 会收到第二个参数，即声明所在的位置。
+- 插件可以不调用、直接传给 PostCSS，比如 `plugins: [postcssPxConversion]`；`require()` 加载的是 CommonJS 版本，类型文件也是对应的版本。
 
 ## 问题反馈
 
-如果你有任何问题或疑虑，请在[GitHub Issues](https://github.com/kirklin/postcss-px-conversion/issues)上报告它们。
+如果有任何问题或建议，请在 [GitHub Issues](https://github.com/kirklin/postcss-px-conversion/issues) 上反馈。
 
-**愉快的编码！**
-
-## License
+## 许可证
 
 [MIT](./LICENSE) License &copy; 2023-PRESENT [Kirk Lin](https://github.com/kirklin)
