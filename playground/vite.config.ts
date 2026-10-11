@@ -16,7 +16,8 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "~/": fileURLToPath(new URL("./src/", import.meta.url)),
+      // A "~/" key only matches once Vite trims it to "~", which it skips on Windows where the folder path ends in "\"
+      "~": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
 });
