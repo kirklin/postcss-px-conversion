@@ -199,13 +199,10 @@ function processDeclarations(
       createUnitReplaceFunction(options, targetUnit!, targetSize),
     );
 
-    if (doesDeclarationExist(declaration.parent, declaration.prop, modifiedValue)) {
-      return;
-    }
-
     if (options.replaceRules) {
       declaration.value = modifiedValue;
-    } else {
+    } else if (!doesDeclarationExist(declaration.parent, declaration.prop, modifiedValue)) {
+      // Only an added declaration can duplicate one that is already there.
       declaration.parent?.insertAfter(index, declaration.clone({ value: modifiedValue }));
     }
   });

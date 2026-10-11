@@ -13,9 +13,8 @@ describe("replaceRules", () => {
     expect(convert(css, { replaceRules: false })).toBe(css);
   });
 
-  it("leaves the value when the converted declaration is already there", () => {
-    const css = ".a { width: 4vw; width: 15px }";
-    expect(convert(css)).toBe(css);
+  it("replaces the value even when the converted declaration is already there", () => {
+    expect(convert(".a { width: 4vw; width: 15px }")).toBe(".a { width: 4vw; width: 4vw }");
   });
 });
 
