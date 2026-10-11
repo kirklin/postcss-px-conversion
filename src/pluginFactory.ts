@@ -10,6 +10,7 @@ import {
   getUnitFromOptions,
   getUnitRegexp,
   hasUnit,
+  isInsideLandscapeMediaQuery,
   isInsideMediaQuery,
   shouldExcludeFile,
   shouldExcludeSelector,
@@ -207,8 +208,7 @@ function processDeclaration(
 ): void {
   // Declarations outside rules, such as the descriptors of @font-face, @page and @property, are not converted
   // 不在规则里的声明（比如 @font-face、@page、@property 的描述符）不转换
-  const rule = getClosestRule(declaration);
-  if (!rule) {
+  if (!getClosestRule(declaration)) {
     return;
   }
 
@@ -241,7 +241,7 @@ function processDeclaration(
     return;
   }
 
-  const { targetUnit, targetSize } = getTargetUnitAndSize(rule, declaration, options, sourceFile, fileViewportWidth);
+  const { targetUnit, targetSize } = getTargetUnitAndSize(declaration, options, sourceFile, fileViewportWidth);
   if (!targetSize) {
     return;
   }
@@ -296,17 +296,12 @@ function getIgnoreComment(declaration: Declaration, result?: Result): Comment | 
 }
 
 function getTargetUnitAndSize(
-  rule: Rule | AtRule,
-  declaration: any,
+  declaration: Declaration,
   options: Options,
   sourceFile: string,
   fileViewportWidth?: number,
 ): { targetUnit: string; targetSize: number | undefined } {
-  // eslint-disable-next-line ts/ban-ts-comment
-  // @ts-expect-error
-  const parentParams = rule.parent?.params;
-
-  if (options.enableLandscape && parentParams && parentParams.includes("landscape")) {
+  if (options.enableLandscape && isInsideLandscapeMediaQuery(declaration)) {
     return {
       targetUnit: options.landscapeUnit,
       targetSize: getLandscapeSize(options, sourceFile, fileViewportWidth),

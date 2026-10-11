@@ -142,3 +142,16 @@ export function isInsideMediaQuery(node: Node): boolean {
   }
   return false;
 }
+
+/**
+ * Whether a node sits inside a `@media` query for landscape, at any depth.
+ * 节点是否位于横屏的 `@media` 查询里，不论嵌套多深。
+ */
+export function isInsideLandscapeMediaQuery(node: Node): boolean {
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent.type === "atrule" && (parent as AtRule).name.toLowerCase() === "media" && (parent as AtRule).params.includes("landscape")) {
+      return true;
+    }
+  }
+  return false;
+}

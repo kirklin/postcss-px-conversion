@@ -54,6 +54,19 @@ describe("landscape", () => {
     expect(convert(css, landscape)).toBe(css);
   });
 
+  it("converts rules in a landscape media query with the landscape settings", () => {
+    const options = { ...landscape, allowMediaQuery: true };
+    expect(convert("@media (orientation: landscape) { .a { width: 71px } }", options)).toBe(
+      "@media (orientation: landscape) { .a { width: 12.5vw } }",
+    );
+    expect(convert("@media (orientation: landscape) { .a { .b { width: 71px } } }", options)).toBe(
+      "@media (orientation: landscape) { .a { .b { width: 12.5vw } } }",
+    );
+    expect(convert("@supports (--mode: landscape) { .a { width: 71px } }", options)).toBe(
+      "@supports (--mode: landscape) { .a { width: 18.93333vw } }",
+    );
+  });
+
   it("starts over for every file", () => {
     const processor = postcss([postcssPxConversion(landscape)]);
     processor.process(".a { width: 71px }", { from: "/project/a.css" }).toString();
