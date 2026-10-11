@@ -1,4 +1,4 @@
-import type { AtRule, Declaration, Plugin, Result, Root, Rule } from "postcss";
+import type { AtRule, Comment, Declaration, Plugin, Result, Root, Rule } from "postcss";
 import type { Options } from "./types";
 import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 import {
@@ -114,6 +114,12 @@ function handleLandscapeMode(
       return;
     }
 
+    // The comment stays where it is: the conversion after this removes it
+    // 注释留在原处，由之后的转换移除
+    if (getIgnoreComment(declaration)) {
+      return;
+    }
+
     const landscapeSize = getLandscapeSize(options, sourceFile, fileViewportWidth);
     if (!landscapeSize) {
       return;
@@ -218,30 +224,39 @@ function processDeclaration(
 }
 
 /**
- * Check if a declaration should be ignored based on comments.
- * 根据注释检查是否应忽略声明。
+ * Check if a declaration should be ignored based on comments. The comment is removed.
+ * 根据注释检查是否应忽略声明。注释会被移除。
  */
-function shouldIgnoreDeclaration(declaration: any, result: any): boolean {
+function shouldIgnoreDeclaration(declaration: Declaration, result: Result): boolean {
+  const ignoreComment = getIgnoreComment(declaration, result);
+  ignoreComment?.remove();
+  return ignoreComment !== undefined;
+}
+
+/**
+ * Find the comment that turns off conversion for a declaration: `px-conversion-ignore-next` right before it,
+ * or `px-conversion-ignore-prev` right after it on the same line.
+ * 查找关闭某条声明转换的注释：紧挨在声明前面的 `px-conversion-ignore-next`，或者同一行紧跟在声明后面的 `px-conversion-ignore-prev`。
+ */
+function getIgnoreComment(declaration: Declaration, result?: Result): Comment | undefined {
   const prevComment = declaration.prev();
   if (prevComment && prevComment.type === "comment" && prevComment.text === IGNORE_NEXT_COMMENT) {
-    prevComment.remove();
-    return true;
+    return prevComment;
   }
 
   const nextComment = declaration.next();
   if (nextComment && nextComment.type === "comment" && nextComment.text === IGNORE_PREV_COMMENT) {
     if (/\n/.test(nextComment.raws.before!)) {
-      result.warn(
+      result?.warn(
         `Unexpected comment /* ${IGNORE_PREV_COMMENT} */ must be after declaration at the same line.`,
         { node: nextComment },
       );
     } else {
-      nextComment.remove();
-      return true;
+      return nextComment;
     }
   }
 
-  return false;
+  return undefined;
 }
 
 function getTargetUnitAndSize(

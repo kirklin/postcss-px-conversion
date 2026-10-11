@@ -18,6 +18,20 @@ describe("landscape", () => {
     ));
   });
 
+  it("respects ignore comments, selector lists and property lists", () => {
+    const css = ".a { /* px-conversion-ignore-next */ width: 71px; height: 71px; margin: 71px } .skip { width: 71px }";
+    const options = { ...landscape, selectorBlacklist: [".skip"], excludedProperties: ["margin"] };
+    expect(normalize(convert(css, options))).toBe(normalize(
+      ".a { width: 71px; height: 18.93333vw; margin: 71px } .skip { width: 71px } @media (orientation: landscape) { .a { height: 12.5vw } }",
+    ));
+  });
+
+  it("applies an ignore comment only to the declaration right after it", () => {
+    expect(normalize(convert(".a { /* px-conversion-ignore-next */ color: red; width: 71px }", landscape))).toBe(normalize(
+      ".a { /* px-conversion-ignore-next */ color: red; width: 18.93333vw } @media (orientation: landscape) { .a { width: 12.5vw } }",
+    ));
+  });
+
   it("does not add a block when nothing changes", () => {
     expect(convert(".a { color: red }", landscape)).toBe(".a { color: red }");
     expect(convert(".a { border: 1px solid }", landscape)).toBe(".a { border: 1px solid }");
