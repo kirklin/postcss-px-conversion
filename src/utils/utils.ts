@@ -1,3 +1,4 @@
+import type { AtRule, Node } from "postcss";
 import type { ContainerWithChildren } from "postcss/lib/container";
 import type { Options } from "../types";
 
@@ -81,6 +82,15 @@ export function doesDeclarationExist(declarations: ContainerWithChildren | undef
   return declarations?.some(declaration => declaration?.prop === property && declaration?.value === value);
 }
 
-export function validateMediaQueryParams(params: string, requiresMediaQuery: boolean): string | boolean {
-  return !params || (params && requiresMediaQuery);
+/**
+ * Whether a node sits inside `@media` or `@container`, at any depth.
+ * 节点是否位于 `@media` 或 `@container` 里，不论嵌套多深。
+ */
+export function isInsideMediaQuery(node: Node): boolean {
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent.type === "atrule" && /^(?:media|container)$/i.test((parent as AtRule).name)) {
+      return true;
+    }
+  }
+  return false;
 }

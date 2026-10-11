@@ -102,7 +102,7 @@ describe("files", () => {
 });
 
 describe("at-rules", () => {
-  it("leaves rules inside at-rules with params unless allowMediaQuery is set, but converts @media nested in a rule", () => {
+  it("leaves rules inside @media and @container unless allowMediaQuery is set, but converts @media nested in a rule", () => {
     const css = "@media (min-width: 768px) { .a { width: 15px } } @container (min-width: 400px) { .b { width: 15px } } .c { @media (hover: hover) { width: 15px } }";
     expect(convert(css)).toBe(
       "@media (min-width: 768px) { .a { width: 15px } } @container (min-width: 400px) { .b { width: 15px } } .c { @media (hover: hover) { width: 4vw } }",
@@ -112,9 +112,10 @@ describe("at-rules", () => {
     );
   });
 
-  it("leaves rules inside @layer, @supports and @scope", () => {
-    const css = "@layer utilities { .a { width: 15px } } @supports (display: grid) { .b { width: 15px } } @scope (.card) { .c { width: 15px } }";
-    expect(convert(css)).toBe(css);
+  it("converts rules inside @layer, @supports and @scope", () => {
+    expect(convert("@layer utilities { .a { width: 15px } } @supports (display: grid) { .b { width: 15px } } @scope (.card) { .c { width: 15px } }")).toBe(
+      "@layer utilities { .a { width: 4vw } } @supports (display: grid) { .b { width: 4vw } } @scope (.card) { .c { width: 4vw } }",
+    );
   });
 
   it("leaves @media inside @layer the way it leaves any @media", () => {

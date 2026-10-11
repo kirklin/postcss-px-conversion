@@ -105,8 +105,8 @@ export interface Options {
   minPixelValue: number;
 
   /**
-   * Allow px to vw conversion in media queries.
-   * 允许在媒体查询中进行 px 到 vw 的转换。
+   * Allow px to vw conversion in rules inside `@media` and `@container`.
+   * 允许转换 `@media` 和 `@container` 里的规则。
    */
   allowMediaQuery: boolean;
 

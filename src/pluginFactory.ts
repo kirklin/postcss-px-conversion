@@ -8,9 +8,9 @@ import {
   getUnitFromOptions,
   getUnitRegexp,
   hasUnit,
+  isInsideMediaQuery,
   shouldExcludeFile,
   shouldExcludeSelector,
-  validateMediaQueryParams,
 } from "./utils";
 
 /**
@@ -91,11 +91,9 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
           handleLandscapeMode(rule, options, sourceFile, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
         }
 
-        // Validate media query parameters
-        // 验证媒体查询参数
-        // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-expect-error
-        if (!validateMediaQueryParams(rule.parent?.params, options.allowMediaQuery)) {
+        // Rules inside @media or @container are converted only with allowMediaQuery
+        // 只有开启 allowMediaQuery 时，才转换 @media 和 @container 里的规则
+        if (!options.allowMediaQuery && isInsideMediaQuery(rule)) {
           return;
         }
 
