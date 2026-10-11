@@ -157,9 +157,10 @@ describe("at-rules", () => {
     expect(convert(css)).toBe(css);
   });
 
-  it("leaves declarations of @position-try", () => {
-    const css = "@position-try --below { top: anchor(bottom); margin-top: 15px }";
-    expect(convert(css)).toBe(css);
+  it("converts declarations of @position-try", () => {
+    expect(convert("@position-try --below { top: anchor(bottom); margin-top: 15px }")).toBe(
+      "@position-try --below { top: anchor(bottom); margin-top: 4vw }",
+    );
   });
 
   it("never converts at-rule params", () => {

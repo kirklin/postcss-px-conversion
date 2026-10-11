@@ -194,9 +194,12 @@ function getLandscapeSize(options: Options, sourceFile: string, fileViewportWidt
  * 一条声明是否属于本插件要转换的范围（忽略注释另外检查）。转换和横向副本都用它判断。
  */
 function shouldConvertDeclaration(declaration: Declaration, options: Options, isAllowedProperty: (prop: string) => boolean): boolean {
-  // Declarations outside rules, such as the descriptors of @font-face, @page and @property, are not converted
-  // 不在规则里的声明（比如 @font-face、@page、@property 的描述符）不转换
-  if (!getClosestRule(declaration)) {
+  // Declarations outside rules, such as the descriptors of @font-face, @page and @property, are not converted.
+  // `@position-try` holds ordinary declarations, so it is converted like a rule.
+  // 不在规则里的声明（比如 @font-face、@page、@property 的描述符）不转换。`@position-try` 里是普通的声明，和规则一样转换。
+  const parent = declaration.parent;
+  const isInPositionTry = parent?.type === "atrule" && (parent as AtRule).name.toLowerCase() === "position-try";
+  if (!getClosestRule(declaration) && !isInPositionTry) {
     return false;
   }
 
