@@ -12,6 +12,19 @@ describe("landscape", () => {
     ));
   });
 
+  it("keeps the block inside the cascade layer of its rules", () => {
+    expect(normalize(convert("@layer utilities { .a { width: 71px } } .b { width: 71px }", landscape))).toBe(normalize(
+      "@layer utilities { .a { width: 18.93333vw } @media (orientation: landscape) { .a { width: 12.5vw } } } .b { width: 18.93333vw } @media (orientation: landscape) { .b { width: 12.5vw } }",
+    ));
+  });
+
+  it("does not copy rules inside at-rules other than @layer", () => {
+    const css = "@supports (display: grid) { .a { width: 71px } } @starting-style { .b { width: 71px } } @keyframes move { to { left: 71px } }";
+    expect(convert(css, landscape)).toBe(
+      "@supports (display: grid) { .a { width: 18.93333vw } } @starting-style { .b { width: 18.93333vw } } @keyframes move { to { left: 18.93333vw } }",
+    );
+  });
+
   it("keeps nested rules in the copy", () => {
     expect(normalize(convert(".a { width: 71px; &:hover { width: 142px; color: red } }", landscape))).toBe(normalize(
       ".a { width: 18.93333vw; &:hover { width: 37.86667vw; color: red } } @media (orientation: landscape) { .a { width: 12.5vw; &:hover { width: 25vw } } }",

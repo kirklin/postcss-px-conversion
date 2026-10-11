@@ -12,6 +12,7 @@ import {
   hasUnit,
   isInsideLandscapeMediaQuery,
   isInsideMediaQuery,
+  isTopLevelRule,
   shouldExcludeFile,
   shouldExcludeSelectors,
 } from "./utils";
@@ -43,9 +44,9 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
     postcssPlugin: PLUGIN_NAME,
 
     Once(css: Root, { result, AtRule }) {
-      // Store landscape at-rules for later processing. Every file starts with an empty list.
-      // 存储横向模式的 at-rules，以便后续处理。每个文件都从空列表开始。
-      const landscapeAtRules: AtRule[] = [];
+      // Store landscape copies by where they go: the stylesheet, or the @layer block their rule sits in. Every file starts with an empty list.
+      // 按副本要放进的位置（样式表本身，或者规则所在的 @layer 块）存储横向副本。每个文件都从空列表开始。
+      const landscapeAtRules = new Map<Container, Rule[]>();
       let fileViewportWidth: number | undefined;
 
       // 检查文件开头是否有视口宽度配置
@@ -62,11 +63,11 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         });
       }
       css.walkRules((rule) => {
-        // Handle landscape mode if enabled. A rule nested in another rule is not copied on its own: the copy would lose the selector around it.
-        // 如果启用了横向模式，则处理横向模式。嵌套在别的规则里的规则不单独复制：复制出去会丢掉外层的选择器。
-        // eslint-disable-next-line ts/ban-ts-comment
-        // @ts-expect-error
-        if (options.enableLandscape && rule.parent?.type !== "rule" && !rule.parent?.params) {
+        // Handle landscape mode if enabled. Only rules directly in the stylesheet or in @layer blocks are copied:
+        // a rule nested in another rule or at-rule would lose the selector or condition around it.
+        // 如果启用了横向模式，则处理横向模式。只复制直接写在样式表里或 @layer 块里的规则：
+        // 嵌套在别的规则或 at-rule 里的规则，复制出去会丢掉外层的选择器或条件。
+        if (options.enableLandscape && isTopLevelRule(rule)) {
           handleLandscapeMode(rule, options, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
         }
       });
@@ -77,10 +78,10 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         processDeclaration(declaration, options, isAllowedProperty, unitRegexp, result, fileViewportWidth);
       });
 
-      // Add landscape media query if necessary
-      // 如果需要，添加横向媒体查询
-      if (landscapeAtRules.length > 0) {
-        addLandscapeMediaQuery(css, landscapeAtRules, AtRule);
+      // Add a landscape media query at the end of every place that has copies, so the copies keep their cascade layer
+      // 在每个有副本的位置末尾添加横向媒体查询，副本因此留在原来的层级里
+      for (const [container, landscapeRules] of landscapeAtRules) {
+        addLandscapeMediaQuery(container, landscapeRules, AtRule);
       }
     },
   };
@@ -94,7 +95,7 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
 function handleLandscapeMode(
   rule: Rule,
   options: Options,
-  landscapeAtRules: AtRule[],
+  landscapeAtRules: Map<Container, Rule[]>,
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
   fileViewportWidth?: number,
@@ -151,7 +152,8 @@ function handleLandscapeMode(
   landscapeRule.cleanRaws();
 
   if (landscapeRule.nodes.length > 0) {
-    landscapeAtRules.push(landscapeRule as unknown as AtRule);
+    const container = rule.parent as Container;
+    landscapeAtRules.set(container, [...(landscapeAtRules.get(container) ?? []), landscapeRule]);
   }
 }
 
@@ -330,15 +332,15 @@ function getViewportSize(options: Options, sourceFile: string, fileViewportWidth
 }
 
 /**
- * Add landscape media query to the CSS.
- * 向 CSS 添加横向媒体查询。
+ * Add landscape media query to the end of a container: the stylesheet, or an @layer block.
+ * 向样式表或 @layer 块的末尾添加横向媒体查询。
  */
-function addLandscapeMediaQuery(css: Root, landscapeAtRules: AtRule[], AtRuleNode: typeof AtRule): void {
+function addLandscapeMediaQuery(container: Container, landscapeRules: Rule[], AtRuleNode: typeof AtRule): void {
   // The node classes come with the helpers PostCSS passes to the plugin; Root has no AtRule on it.
   const landscapeMediaRule = new AtRuleNode({
     params: "(orientation: landscape)",
     name: "media",
-    nodes: landscapeAtRules,
+    nodes: landscapeRules,
   });
-  css.append(landscapeMediaRule);
+  container.append(landscapeMediaRule);
 }

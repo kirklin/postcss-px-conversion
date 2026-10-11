@@ -131,6 +131,19 @@ export function isKeyframeRule(rule: Rule): boolean {
 }
 
 /**
+ * Whether a rule sits directly in the stylesheet, or in `@layer` blocks only.
+ * 规则是否直接写在样式表里，或者只包在 `@layer` 块里。
+ */
+export function isTopLevelRule(rule: Rule): boolean {
+  for (let parent = rule.parent; parent && parent.type !== "root"; parent = parent.parent) {
+    if (parent.type !== "atrule" || (parent as AtRule).name.toLowerCase() !== "layer") {
+      return false;
+    }
+  }
+  return true;
+}
+
+/**
  * Whether a node sits inside `@media` or `@container`, at any depth.
  * 节点是否位于 `@media` 或 `@container` 里，不论嵌套多深。
  */
