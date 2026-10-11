@@ -3,7 +3,7 @@
     "target": "es2018",
     "lib": ["esnext"],
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "strict": true,
     "strictNullChecks": true,
@@ -11,5 +11,5 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true
   },
-  "exclude": ["playground"]
+  "exclude": ["dist", "playground"]
 }

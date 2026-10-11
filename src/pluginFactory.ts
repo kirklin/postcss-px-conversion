@@ -124,7 +124,7 @@ function handleLandscapeMode(
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
   fileViewportWidth?: number,
-) {
+): void {
   const landscapeRule = rule.clone().removeAll();
 
   rule.walkDecls((declaration: any) => {
@@ -178,7 +178,7 @@ function processDeclarations(
   unitRegexp: RegExp,
   result: Result,
   fileViewportWidth?: number,
-) {
+): void {
   rule.walkDecls((declaration, index: number) => {
     if (!declaration.value.includes(options.unitType) || !isAllowedProperty(declaration.prop)) {
       return;
@@ -238,12 +238,12 @@ function shouldIgnoreDeclaration(declaration: any, result: any): boolean {
 }
 
 function getTargetUnitAndSize(
-  rule: Rule,
+  rule: Rule | AtRule,
   declaration: any,
   options: Options,
   sourceFile: string,
   fileViewportWidth?: number,
-) {
+): { targetUnit: string; targetSize: number | undefined } {
   // eslint-disable-next-line ts/ban-ts-comment
   // @ts-expect-error
   const parentParams = rule.parent?.params;
@@ -279,7 +279,7 @@ function getViewportSize(options: Options, sourceFile: string, fileViewportWidth
  * Add landscape media query to the CSS.
  * 向 CSS 添加横向媒体查询。
  */
-function addLandscapeMediaQuery(css: Root, landscapeAtRules: AtRule[]) {
+function addLandscapeMediaQuery(css: Root, landscapeAtRules: AtRule[]): void {
   const landscapeMediaRule = new (css.constructor as any).AtRule({
     params: "(orientation: landscape)",
     name: "media",

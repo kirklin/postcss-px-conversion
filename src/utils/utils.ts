@@ -42,7 +42,7 @@ export function isListedSelector(selector: string, list: (string | RegExp)[]): b
   );
 }
 
-export function getUnitFromOptions(prop: string | string[], opts: Options) {
+export function getUnitFromOptions(prop: string | string[], opts: Options): string {
   return Array.isArray(prop)
     ? opts.viewportUnit
     : (prop.includes("font") ? opts.fontViewportUnit : opts.viewportUnit);
@@ -70,12 +70,12 @@ export function createUnitReplaceFunction(opts: Options, targetUnit: string | nu
   };
 }
 
-export function doesDeclarationExist(declarations: ContainerWithChildren | undefined, property: string, value: string) {
+export function doesDeclarationExist(declarations: ContainerWithChildren | undefined, property: string, value: string): boolean | undefined {
   // eslint-disable-next-line ts/ban-ts-comment
   // @ts-expect-error
   return declarations?.some(declaration => declaration?.prop === property && declaration?.value === value);
 }
 
-export function validateMediaQueryParams(params: string, requiresMediaQuery: boolean) {
+export function validateMediaQueryParams(params: string, requiresMediaQuery: boolean): string | boolean {
   return !params || (params && requiresMediaQuery);
 }

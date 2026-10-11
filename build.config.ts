@@ -8,5 +8,8 @@ export default defineBuildConfig({
   clean: true,
   rollup: {
     emitCJS: true,
+    esbuild: {
+      target: "node16",
+    },
   },
 });

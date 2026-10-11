@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <h1 class="title">Pixel to Viewport Unit Converter Demo</h1>
+    <h1 class="title">
+      Pixel to Viewport Unit Converter Demo
+    </h1>
     <div class="bento-grid">
       <div class="bento-item normal-px">
         <h3>Normal Pixels</h3>
@@ -15,11 +17,11 @@
       </div>
       <div class="bento-item transform">
         <h3>Transform</h3>
-        <div class="transform-box"></div>
+        <div class="transform-box" />
       </div>
       <div class="bento-item animated">
         <h3>Animation</h3>
-        <div class="animate-box"></div>
+        <div class="animate-box" />
       </div>
       <div class="bento-item responsive">
         <h3>Responsive</h3>
@@ -32,7 +34,7 @@
       </div>
       <div class="bento-item complex-values">
         <h3>Complex Values</h3>
-        <div class="complex-box"></div>
+        <div class="complex-box" />
       </div>
       <div class="bento-item custom-property">
         <h3>Custom Property</h3>
@@ -54,7 +56,7 @@
 }
 
 .container {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   max-width: 1200px;
   margin: 0 auto;
   padding: 40px 20px;
@@ -76,7 +78,7 @@
 
 .bento-item {
   cursor: grab;
-  select-none: none;
+  user-select: none;
   overflow: hidden;
   border-radius: 24px;
   background-color: white;
@@ -125,9 +127,15 @@
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .animated .animate-box {

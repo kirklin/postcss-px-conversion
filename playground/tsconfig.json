@@ -1,31 +1,21 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "esnext",
     "jsx": "preserve",
-    "lib": ["DOM", "ESNext"],
-    "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "lib": ["dom", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "paths": {
-      "~/*": ["src/*"],
-      "#/*": ["types/*"]
+      "~/*": ["./src/*"]
     },
     "resolveJsonModule": true,
-    "typeRoots": ["./types"],
-    "types": [
-      "vitest",
-      "vite/client",
-      "unplugin-icons/types/vue",
-      "@intlify/unplugin-vue-i18n/messages"
-    ],
-    "allowJs": true,
+    "types": ["vite/client"],
     "strict": true,
-    "strictNullChecks": true,
     "noUnusedLocals": true,
+    "noEmit": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "exclude": ["dist", "node_modules"]
+  "include": ["src", "types", "vite.config.ts"]
 }
