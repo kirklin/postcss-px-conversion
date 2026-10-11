@@ -7,6 +7,7 @@ import {
   doesDeclarationExist,
   getUnitFromOptions,
   getUnitRegexp,
+  hasUnit,
   shouldExcludeFile,
   shouldExcludeSelector,
   validateMediaQueryParams,
@@ -59,7 +60,7 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
       }
       css.walkAtRules("keyframes", (atRule) => {
         atRule.walkDecls((decl) => {
-          if (decl.value.includes(options.unitType)) {
+          if (hasUnit(decl.value, options.unitType)) {
             const sourceFile = atRule.source?.input.file || "";
             const { targetUnit, targetSize } = getTargetUnitAndSize(atRule, decl, options, sourceFile, fileViewportWidth);
 
@@ -128,7 +129,7 @@ function handleLandscapeMode(
   const landscapeRule = rule.clone().removeAll();
 
   rule.walkDecls((declaration: any) => {
-    if (!declaration.value.includes(options.unitType) || !isAllowedProperty(declaration.prop)) {
+    if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
       return;
     }
 
@@ -180,7 +181,7 @@ function processDeclarations(
   fileViewportWidth?: number,
 ): void {
   rule.walkDecls((declaration, index: number) => {
-    if (!declaration.value.includes(options.unitType) || !isAllowedProperty(declaration.prop)) {
+    if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
       return;
     }
 

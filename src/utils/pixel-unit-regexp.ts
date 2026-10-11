@@ -10,6 +10,14 @@ export function getUnitRegexp(unit: string): RegExp {
   // Group 1 is the sign, group 2 the number.
   return new RegExp(
     `"[^"]+"|'[^']+'|url\\([^\\)]+\\)|(?<![\\w.-])([+-]?)(\\d*\\.?\\d+)${unit}(?![\\w-])`,
-    "g",
+    "gi",
   );
+}
+
+/**
+ * Quick check before running the regular expression. CSS units are case-insensitive.
+ * 运行正则前的快速检查。CSS 单位不区分大小写。
+ */
+export function hasUnit(value: string, unit: string): boolean {
+  return value.toLowerCase().includes(unit.toLowerCase());
 }
