@@ -25,7 +25,7 @@ describe("replaceRules", () => {
 });
 
 describe("options", () => {
-  it("lets an option set to undefined replace the default", () => {
-    expect(convert(".a { width: 15px }", { viewportWidth: undefined })).toBe(".a { width: 15px }");
+  it("uses the defaults for options set to undefined", () => {
+    expect(convert(".a { width: 15px }", { viewportWidth: undefined, viewportUnit: undefined })).toBe(".a { width: 4vw }");
   });
 });

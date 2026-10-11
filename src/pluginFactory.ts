@@ -1,6 +1,6 @@
 import type { AtRule, Comment, Container, Declaration, Plugin, Result, Root, Rule } from "postcss";
 import type { Options } from "./types";
-import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
+import { IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 import {
   createPropertiesListMatcher,
   createUnitReplaceFunction,
@@ -13,6 +13,7 @@ import {
   isInsideLandscapeMediaQuery,
   isInsideMediaQuery,
   isTopLevelRule,
+  resolveOptions,
   shouldExcludeFile,
   shouldExcludeSelectors,
 } from "./utils";
@@ -25,9 +26,9 @@ import {
  * @returns PostCSS plugin
  */
 export function plugin(customOptions: Partial<Options> = {}): Plugin {
-  // Merge default options with custom options
-  // 将默认选项与自定义选项合并
-  const options: Options = { ...DEFAULT_OPTIONS, ...customOptions };
+  // Merge default options with custom options. An option set to undefined keeps its default.
+  // 将默认选项与自定义选项合并。设为 undefined 的选项保留默认值。
+  const options: Options = resolveOptions(customOptions);
 
   // Get the regular expression for matching the unit type
   // 获取用于匹配单位类型的正则表达式
