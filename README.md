@@ -26,7 +26,7 @@
 <b>English</b> | <a href="README.zh-CN.md">简体中文</a>
 </div>
 
-This is a PostCSS plugin that converts pixel units to viewport units (vw, vh, vmin, vmax). The code has been migrated from the original project [evrone/postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport), as it is no longer maintained. This migrated code is compatible with the latest version of PostCSS.
+This is a PostCSS plugin that converts pixel units to viewport units (vw, vh, vmin, vmax). It is compatible with the latest version of PostCSS.
 
 ## Installation
 
@@ -191,9 +191,7 @@ And in a CSS file for mobile devices:
 
 This allows you to generate CSS for multiple devices in a single build while maintaining flexibility and maintainability in your code.
 
-## Credits
-
-Original code migrated from [evrone/postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport).
+## Feedback
 
 If you have any questions or issues, please report them on [GitHub Issues](https://github.com/kirklin/postcss-px-conversion/issues).
 

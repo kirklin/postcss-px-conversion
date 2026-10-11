@@ -26,7 +26,7 @@
 <a href="README.md">English</a>| <b>简体中文</b>
 </div>
 
-这是一个将像素单位转换为视口单位（vw、vh、vmin、vmax）的PostCSS插件。这段代码已经从原始项目[evrone/postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport)迁移过来，因为原项目已不再维护。这个迁移后的代码与最新版本的PostCSS兼容。
+这是一个将像素单位转换为视口单位（vw、vh、vmin、vmax）的PostCSS插件，与最新版本的PostCSS兼容。
 
 ## 安装
 
@@ -190,9 +190,7 @@ module.exports = {
 
 这样，你就可以在一次构建中生成适配多种设备的CSS，同时保持了代码的灵活性和可维护性。
 
-## 鸣谢
-
-原始代码从[evrone/postcss-px-to-viewport](https://github.com/evrone/postcss-px-to-viewport)迁移而来。
+## 问题反馈
 
 如果你有任何问题或疑虑，请在[GitHub Issues](https://github.com/kirklin/postcss-px-conversion/issues)上报告它们。
 
