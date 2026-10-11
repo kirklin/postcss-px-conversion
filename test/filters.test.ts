@@ -51,10 +51,10 @@ describe("properties", () => {
 });
 
 describe("selectors", () => {
-  it("leaves rules matching selectorBlacklist but converts rules nested in them", () => {
+  it("leaves rules matching selectorBlacklist, including rules nested in them", () => {
     const css = ".ignore .a { width: 15px } .skip-b { width: 15px } .ok { width: 15px } .ignore { .child { width: 15px } }";
     expect(convert(css, { selectorBlacklist: [".ignore", /^\.skip-/g] })).toBe(
-      ".ignore .a { width: 15px } .skip-b { width: 15px } .ok { width: 4vw } .ignore { .child { width: 4vw } }",
+      ".ignore .a { width: 15px } .skip-b { width: 15px } .ok { width: 4vw } .ignore { .child { width: 15px } }",
     );
   });
 

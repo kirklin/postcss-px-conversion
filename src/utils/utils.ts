@@ -30,14 +30,23 @@ export function shouldExcludeFile(options: Options, filePath: string): boolean {
 }
 
 export function shouldExcludeSelector(options: Options, selector: string): boolean {
-  const isInBlacklist = isListedSelector(selector, options.selectorBlacklist);
+  return shouldExcludeSelectors(options, [selector]);
+}
+
+/**
+ * Check the selectors of all the style rules around a declaration: one in the blacklist excludes it,
+ * and with a whitelist, at least one of them has to be in it.
+ * 检查声明外面所有样式规则的选择器：任何一个在黑名单里就排除；设置了白名单时，至少要有一个在白名单里。
+ */
+export function shouldExcludeSelectors(options: Options, selectors: string[]): boolean {
+  const isInBlacklist = selectors.some(selector => isListedSelector(selector, options.selectorBlacklist));
 
   if (isInBlacklist) {
     return true;
   }
 
   if (options.selectorWhitelist.length > 0) {
-    return !isListedSelector(selector, options.selectorWhitelist);
+    return !selectors.some(selector => isListedSelector(selector, options.selectorWhitelist));
   }
 
   return false;

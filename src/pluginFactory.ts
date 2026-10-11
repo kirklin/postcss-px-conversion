@@ -13,6 +13,7 @@ import {
   isInsideMediaQuery,
   shouldExcludeFile,
   shouldExcludeSelector,
+  shouldExcludeSelectors,
 } from "./utils";
 
 /**
@@ -173,11 +174,11 @@ function processDeclaration(
     return;
   }
 
-  // A declaration is converted when at least one of the style rules around it passes the selector lists.
+  // The selector lists apply to all the style rules around the declaration.
   // Keyframe selectors such as `from` and `50%` are not checked.
-  // 外面的样式规则里只要有一层通过选择器名单，这条声明就会转换。`from`、`50%` 这类关键帧选择器不参与检查。
-  const styleRules = getStyleRules(declaration);
-  if (styleRules.length > 0 && styleRules.every(styleRule => shouldExcludeSelector(options, styleRule.selector))) {
+  // 选择器名单作用于声明外面的所有样式规则。`from`、`50%` 这类关键帧选择器不参与检查。
+  const selectors = getStyleRules(declaration).map(styleRule => styleRule.selector);
+  if (selectors.length > 0 && shouldExcludeSelectors(options, selectors)) {
     return;
   }
 
