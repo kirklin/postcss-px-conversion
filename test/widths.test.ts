@@ -21,11 +21,11 @@ describe("per-file width comments", () => {
     );
   });
 
-  it("applies the first comment to the whole stylesheet", () => {
+  it("applies each comment to the file it was written in", () => {
     const root = postcss.parse("/* viewport-width: 750 */ .a { width: 75px }", { from: "/project/src/desktop.css" });
     root.append(postcss.parse(" .b { width: 75px }", { from: "/project/src/mobile.css" }).nodes);
     const output = postcss([postcssPxConversion({})]).process(root, { from: undefined }).css;
-    expect(output).toBe("/* viewport-width: 750 */ .a { width: 10vw } .b { width: 10vw }");
+    expect(output).toBe("/* viewport-width: 750 */ .a { width: 10vw } .b { width: 20vw }");
   });
 
   it("falls back to viewportWidth for a width of 0", () => {

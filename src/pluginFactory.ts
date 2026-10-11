@@ -47,17 +47,19 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
       // Store landscape copies by where they go: the stylesheet, or the @layer block their rule sits in. Every file starts with an empty list.
       // 按副本要放进的位置（样式表本身，或者规则所在的 @layer 块）存储横向副本。每个文件都从空列表开始。
       const landscapeAtRules = new Map<Container, Rule[]>();
-      let fileViewportWidth: number | undefined;
+      // Widths set by a `viewport-width: 1920` comment, by source file. The first comment of a file wins.
+      // 由 `viewport-width: 1920` 这类注释设置的宽度，按源文件存储。每个文件以它的第一条注释为准。
+      const fileViewportWidths = new Map<string, number>();
 
       // 检查文件开头是否有视口宽度配置
       if (options.enablePerFileConfig) {
         css.walkComments((comment) => {
-          if (comment.text.startsWith(options.viewportWidthComment)) {
+          const sourceFile = comment.source?.input.file || "";
+          if (comment.text.startsWith(options.viewportWidthComment) && !fileViewportWidths.has(sourceFile)) {
             const widthMatch = comment.text.match(/(\d+)/);
             if (widthMatch) {
-              fileViewportWidth = Number.parseInt(widthMatch[1], 10);
+              fileViewportWidths.set(sourceFile, Number.parseInt(widthMatch[1], 10));
               // comment.remove(); // 移除配置注释
-              return false; // 停止遍历
             }
           }
         });
@@ -68,14 +70,14 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         // 如果启用了横向模式，则处理横向模式。只复制直接写在样式表里或 @layer 块里的规则：
         // 嵌套在别的规则或 at-rule 里的规则，复制出去会丢掉外层的选择器或条件。
         if (options.enableLandscape && isTopLevelRule(rule)) {
-          handleLandscapeMode(rule, options, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
+          handleLandscapeMode(rule, options, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidths);
         }
       });
 
       // Every declaration goes through the same checks, keyframes included. The landscape copies above are taken before this.
       // 每条声明都经过同样的检查，关键帧也一样。上面的横向副本在这之前复制。
       css.walkDecls((declaration) => {
-        processDeclaration(declaration, options, isAllowedProperty, unitRegexp, result, fileViewportWidth);
+        processDeclaration(declaration, options, isAllowedProperty, unitRegexp, result, fileViewportWidths);
       });
 
       // Add a landscape media query at the end of every place that has copies, so the copies keep their cascade layer
@@ -98,7 +100,7 @@ function handleLandscapeMode(
   landscapeAtRules: Map<Container, Rule[]>,
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
-  fileViewportWidth?: number,
+  fileViewportWidths: Map<string, number>,
 ): void {
   const landscapeRule = rule.clone();
 
@@ -115,7 +117,7 @@ function handleLandscapeMode(
     }
 
     const sourceFile = declaration.source?.input.file || "";
-    const landscapeSize = getLandscapeSize(options, sourceFile, fileViewportWidth);
+    const landscapeSize = getLandscapeSize(options, sourceFile, fileViewportWidths.get(sourceFile));
     if (!landscapeSize) {
       return;
     }
@@ -236,7 +238,7 @@ function processDeclaration(
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
   result: Result,
-  fileViewportWidth?: number,
+  fileViewportWidths: Map<string, number>,
 ): void {
   if (!shouldConvertDeclaration(declaration, options, isAllowedProperty)) {
     return;
@@ -247,7 +249,7 @@ function processDeclaration(
   }
 
   const sourceFile = declaration.source?.input.file || "";
-  const { targetUnit, targetSize } = getTargetUnitAndSize(declaration, options, sourceFile, fileViewportWidth);
+  const { targetUnit, targetSize } = getTargetUnitAndSize(declaration, options, sourceFile, fileViewportWidths.get(sourceFile));
   if (!targetSize) {
     return;
   }
