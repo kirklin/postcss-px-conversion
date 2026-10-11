@@ -127,7 +127,7 @@ function handleLandscapeMode(
 
     const sourceFile = declaration.source?.input.file || "";
     const getContext = (): ConversionContext => getConversionContext(declaration, outerAtRules);
-    const landscapeFactor = getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, getContext, fileViewportWidths.get(sourceFile)));
+    const landscapeFactor = getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, declaration, getContext, fileViewportWidths.get(sourceFile)));
     if (landscapeFactor === undefined) {
       return;
     }
@@ -190,14 +190,26 @@ function removeEmptyContainers(container: Container): void {
  * Get the landscape size based on options.
  * 根据选项获取横向尺寸。
  */
-function getLandscapeSize(options: Options, sourceFile: string, getContext: () => ConversionContext, fileViewportWidth?: number): number | undefined {
+function getLandscapeSize(options: Options, declaration: Declaration, getContext: () => ConversionContext, fileViewportWidth?: number): number | undefined {
   if (fileViewportWidth) {
     return fileViewportWidth;
   }
   if (typeof options.landscapeViewportWidth === "function") {
-    return options.landscapeViewportWidth(sourceFile, getContext());
+    const width = options.landscapeViewportWidth(declaration.source?.input.file || "", getContext());
+    return checkReturnedWidth(width, declaration, "landscapeViewportWidth");
   }
   return options.landscapeViewportWidth;
+}
+
+/**
+ * A width function returns a number greater than 0, or undefined to leave the declaration as it is.
+ * 宽度函数要返回大于 0 的数；返回 undefined 时，这条声明保持不变。
+ */
+function checkReturnedWidth(width: number | undefined, declaration: Declaration, optionName: string): number | undefined {
+  if (width !== undefined && (typeof width !== "number" || !Number.isFinite(width) || width <= 0)) {
+    throw declaration.error(`${optionName} returned ${String(width)}; it must return a number greater than 0 or undefined`, { plugin: PLUGIN_NAME });
+  }
+  return width;
 }
 
 /**
@@ -259,7 +271,7 @@ function processDeclaration(
   }
 
   const sourceFile = declaration.source?.input.file || "";
-  const { targetUnit, factor } = getTargetUnitAndFactor(declaration, options, sourceFile, fileViewportWidths.get(sourceFile));
+  const { targetUnit, factor } = getTargetUnitAndFactor(declaration, options, fileViewportWidths.get(sourceFile));
   if (factor === undefined) {
     return;
   }
@@ -320,20 +332,19 @@ function getIgnoreComment(declaration: Declaration, result?: Result): Comment | 
 function getTargetUnitAndFactor(
   declaration: Declaration,
   options: Options,
-  sourceFile: string,
   fileViewportWidth?: number,
 ): { targetUnit: string; factor: number | undefined } {
   const getContext = (): ConversionContext => getConversionContext(declaration);
   if (options.enableLandscape && isInsideLandscapeMediaQuery(declaration)) {
     return {
       targetUnit: options.landscapeUnit,
-      factor: getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, getContext, fileViewportWidth)),
+      factor: getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, declaration, getContext, fileViewportWidth)),
     };
   } else {
     const targetUnit = getUnitFromOptions(declaration.prop, options);
     return {
       targetUnit,
-      factor: getUnitFactor(options, targetUnit, () => getViewportSize(options, sourceFile, getContext, fileViewportWidth)),
+      factor: getUnitFactor(options, targetUnit, () => getViewportSize(options, declaration, getContext, fileViewportWidth)),
     };
   }
 }
@@ -342,12 +353,13 @@ function getTargetUnitAndFactor(
  * Get the viewport size based on options.
  * 根据选项获取视口尺寸。
  */
-function getViewportSize(options: Options, sourceFile: string, getContext: () => ConversionContext, fileViewportWidth?: number): number | undefined {
+function getViewportSize(options: Options, declaration: Declaration, getContext: () => ConversionContext, fileViewportWidth?: number): number | undefined {
   if (fileViewportWidth) {
     return fileViewportWidth;
   }
   if (typeof options.viewportWidth === "function") {
-    return options.viewportWidth(sourceFile, getContext());
+    const width = options.viewportWidth(declaration.source?.input.file || "", getContext());
+    return checkReturnedWidth(width, declaration, "viewportWidth");
   }
   return options.viewportWidth;
 }

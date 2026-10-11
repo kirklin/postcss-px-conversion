@@ -76,9 +76,17 @@ describe("viewportWidth functions", () => {
     expect(convert(css, options)).toBe(".a { width: 40vw } @media (min-width: 768px) { .a { width: 10vw } }");
   });
 
-  it("leaves the declaration when the function returns undefined or 0", () => {
+  it("leaves the declaration when the function returns undefined", () => {
     expect(convert(".a { width: 75px }", { viewportWidth: () => undefined })).toBe(".a { width: 75px }");
-    expect(convert(".a { width: 75px }", { viewportWidth: () => 0 })).toBe(".a { width: 75px }");
+  });
+
+  it("must return a width greater than 0", () => {
+    expect(() => convert(".a { width: 75px }", { viewportWidth: () => 0 })).toThrow(
+      "viewportWidth returned 0; it must return a number greater than 0 or undefined",
+    );
+    expect(() => convert(".a { width: 71px }", { enableLandscape: true, landscapeViewportWidth: () => Number.NaN })).toThrow(
+      "landscapeViewportWidth returned NaN; it must return a number greater than 0 or undefined",
+    );
   });
 
   it("is not called for px and rem targets", () => {
