@@ -64,7 +64,11 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
             // 宽度取标记文字后面的第一个数，可以带小数
             const widthMatch = comment.text.slice(options.viewportWidthComment.length).match(/\d*\.?\d+/);
             if (widthMatch) {
-              fileViewportWidths.set(sourceFile, Number(widthMatch[0]));
+              const width = Number(widthMatch[0]);
+              if (width <= 0) {
+                throw comment.error(`${options.viewportWidthComment} must be greater than 0`, { plugin: PLUGIN_NAME });
+              }
+              fileViewportWidths.set(sourceFile, width);
               // comment.remove(); // 移除配置注释
             }
           }

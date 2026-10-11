@@ -32,8 +32,8 @@ describe("per-file width comments", () => {
     expect(output).toBe("/* viewport-width: 750 */ .a { width: 10vw } .b { width: 20vw }");
   });
 
-  it("falls back to viewportWidth for a width of 0", () => {
-    expect(convert("/* viewport-width: 0 */ .a { width: 75px }")).toBe("/* viewport-width: 0 */ .a { width: 20vw }");
+  it("rejects a width of 0", () => {
+    expect(() => convert("/* viewport-width: 0 */ .a { width: 75px }")).toThrow("viewport-width must be greater than 0");
   });
 });
 
