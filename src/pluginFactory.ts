@@ -83,11 +83,11 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
           return undefined;
         }
 
-        // Handle landscape mode if enabled
-        // 如果启用了横向模式，则处理横向模式
+        // Handle landscape mode if enabled. A rule nested in another rule is not copied on its own: the copy would lose the selector around it.
+        // 如果启用了横向模式，则处理横向模式。嵌套在别的规则里的规则不单独复制：复制出去会丢掉外层的选择器。
         // eslint-disable-next-line ts/ban-ts-comment
         // @ts-expect-error
-        if (options.enableLandscape && !rule.parent?.params) {
+        if (options.enableLandscape && rule.parent?.type !== "rule" && !rule.parent?.params) {
           handleLandscapeMode(rule, options, sourceFile, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
         }
 

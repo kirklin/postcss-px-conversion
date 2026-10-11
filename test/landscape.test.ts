@@ -12,6 +12,11 @@ describe("landscape", () => {
     ));
   });
 
+  it("does not copy a nested rule on its own", () => {
+    const css = "@media print { .a { .b { width: 71px } } }";
+    expect(convert(css, landscape)).toBe(css);
+  });
+
   it("starts over for every file", () => {
     const processor = postcss([postcssPxConversion(landscape)]);
     processor.process(".a { width: 71px }", { from: "/project/a.css" }).toString();
