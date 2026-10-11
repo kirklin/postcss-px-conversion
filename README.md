@@ -1,44 +1,225 @@
+<div align="center"><a name="readme-top"></a>
+
+[![postcss-px-conversion][image-banner]][github-link]
+
 # postcss-px-conversion
 
-[![npm version][npm-version-src]][npm-version-href]
-[![npm downloads][npm-downloads-src]][npm-downloads-href]
-[![bundle][bundle-src]][bundle-href]
-[![JSDocs][jsdocs-src]][jsdocs-href]
-[![License][license-src]][license-href]
-[![javascript_code style][code-style-image]][code-style-url]
+A PostCSS plugin that converts px to vw, vh, vmin, vmax, rem and rpx.<br/>
 
-<!-- Badges -->
+**English** · [简体中文](./README.zh-CN.md) · [Changelog][changelog] · [Feedback][github-issues-link]
 
-[npm-version-src]: https://img.shields.io/npm/v/postcss-px-conversion?style=flat&colorA=080f12&colorB=3491fa
-[npm-version-href]: https://npmjs.com/package/postcss-px-conversion
-[npm-downloads-src]: https://img.shields.io/npm/dm/postcss-px-conversion?style=flat&colorA=080f12&colorB=3491fa
-[npm-downloads-href]: https://npmjs.com/package/postcss-px-conversion
-[bundle-src]: https://img.shields.io/bundlephobia/minzip/postcss-px-conversion?style=flat&colorA=080f12&colorB=3491fa&label=minzip
-[bundle-href]: https://bundlephobia.com/result?p=postcss-px-conversion
-[license-src]: https://img.shields.io/github/license/kirklin/postcss-px-conversion.svg?style=flat&colorA=080f12&colorB=3491fa
-[license-href]: https://github.com/kirklin/postcss-px-conversion/blob/main/LICENSE
-[jsdocs-src]: https://img.shields.io/badge/jsdocs-reference-080f12?style=flat&colorA=080f12&colorB=3491fa
-[jsdocs-href]: https://www.jsdocs.io/package/postcss-px-conversion
-[code-style-image]: https://img.shields.io/badge/code__style-%40kirklin%2Feslint--config-3491fa?style=flat&colorA=080f12&colorB=3491fa
-[code-style-url]: https://github.com/kirklin/eslint-config/
+<!-- SHIELD GROUP -->
 
-<div align='center'>
-<b>English</b> | <a href="README.zh-CN.md">简体中文</a>
+[![npm version][npm-release-shield]][npm-release-link]
+[![npm downloads][npm-downloads-shield]][npm-downloads-link]
+[![Bundle size][bundle-shield]][bundle-link]
+[![PostCSS 8][postcss-shield]][postcss-link]<br/>
+[![GitHub stars][github-stars-shield]][github-stars-link]
+[![GitHub issues][github-issues-shield]][github-issues-link]
+[![License][github-license-shield]][github-license-link]
+
 </div>
 
-A PostCSS plugin that converts pixel units to viewport units (vw, vh, vmin, vmax). It also converts px to rem, rem to px and px to rpx, and works with PostCSS 8.
+<details>
+<summary><kbd>Table of contents</kbd></summary>
 
-## Installation
+- [✨ Features](#-features)
+  - [px to viewport units](#px-to-viewport-units)
+  - [vw, vh, vmin, vmax, rem or rpx](#vw-vh-vmin-vmax-rem-or-rpx)
+  - [A design width for each breakpoint](#a-design-width-for-each-breakpoint)
+  - [A design width for each file](#a-design-width-for-each-file)
+  - [Landscape](#landscape)
+  - [Values that stay as they are](#values-that-stay-as-they-are)
+- [📦 Installation](#-installation)
+- [🚀 Usage](#-usage)
+  - [Nuxt](#nuxt)
+  - [rem to px](#rem-to-px)
+- [⚙️ Options](#️-options)
+- [🧮 How values are converted](#-how-values-are-converted)
+- [🤝 Feedback](#-feedback)
+
+<br/>
+
+</details>
+
+## ✨ Features
+
+![px to viewport units][image-feature-viewport-units]
+
+### px to viewport units
+
+Write the sizes from the design in px. Each value is divided by `viewportWidth` and multiplied by 100, so on a 375px design `width: 320px` becomes `width: 85.33333vw`.
+
+```css
+/* Input */
+.card {
+  width: 320px;
+  padding: 12px 24px;
+  font-size: 16px;
+  border: 1px solid;
+}
+
+/* Output */
+.card {
+  width: 85.33333vw;
+  padding: 3.2vw 6.4vw;
+  font-size: 4.26667vw;
+  border: 1px solid;
+}
+```
+
+Values up to `minPixelValue`, which is 1 by default, keep their px, so hairline borders stay one pixel wide.
+
+<div align="right">
+
+[![Back to top][back-to-top]](#readme-top)
+
+</div>
+
+![vw, vh, vmin, vmax, rem or rpx][image-feature-target-units]
+
+### vw, vh, vmin, vmax, rem or rpx
+
+`viewportUnit` sets the unit to convert to, and `fontViewportUnit` sets it for properties whose name contains `font`. Viewport units scale with the design width, and so does rpx, which divides the screen into 750 parts. rem and px convert into each other through `rootValue`, which is 16 by default.
+
+```js
+// 320px -> 20rem
+postcssPxConversion({ viewportUnit: "rem" });
+// 320px -> 640rpx
+postcssPxConversion({ viewportUnit: "rpx" });
+// 1.5rem -> 24px
+postcssPxConversion({ unitType: "rem", viewportUnit: "px", fontViewportUnit: "px" });
+```
+
+<div align="right">
+
+[![Back to top][back-to-top]](#readme-top)
+
+</div>
+
+![A design width for each breakpoint][image-feature-breakpoints]
+
+### A design width for each breakpoint
+
+`viewportWidth` can be a function. It receives the file path and the position of the declaration: its property, the selector of its rule and the at-rules around it, outermost first. Returning undefined leaves the declaration as it is.
+
+```js
+postcssPxConversion({
+  allowMediaQuery: true,
+  viewportWidth: (file, { atRules }) => {
+    const desktop = atRules.some(atRule => atRule.params.includes("min-width: 768px"));
+    return desktop ? 1440 : 375;
+  },
+});
+```
+
+With this setting, `width: 150px` becomes `40vw` on its own and `10.41667vw` inside `@media (min-width: 768px)`.
+
+<div align="right">
+
+[![Back to top][back-to-top]](#readme-top)
+
+</div>
+
+![A design width for each file][image-feature-per-file-width]
+
+### A design width for each file
+
+A comment that starts with `viewport-width` sets the width for the declarations from the file it is written in, even after several files have been combined into one stylesheet. The width is the first number after the comment text and has to be greater than 0.
+
+```css
+/* viewport-width: 1920 */
+.header {
+  width: 1600px; /* converted to 83.33333vw */
+}
+```
+
+```css
+/* viewport-width: 375 */
+.header {
+  width: 350px; /* converted to 93.33333vw */
+}
+```
+
+One build can then produce stylesheets for desktop and mobile, loaded with media queries:
+
+```html
+<link rel="stylesheet" href="desktop.css" media="(min-width: 1280px)" />
+<link rel="stylesheet" href="mobile.css" media="(max-width: 1279px)" />
+```
+
+<div align="right">
+
+[![Back to top][back-to-top]](#readme-top)
+
+</div>
+
+![Landscape][image-feature-landscape]
+
+### Landscape
+
+With `enableLandscape`, the declarations that change are copied into a `@media (orientation: landscape)` block and converted with `landscapeUnit` and `landscapeViewportWidth`, which is 568 by default.
+
+```css
+/* Input */
+.banner {
+  width: 71px;
+}
+
+/* Output */
+.banner {
+  width: 18.93333vw;
+}
+@media (orientation: landscape) {
+  .banner {
+    width: 12.5vw;
+  }
+}
+```
+
+Rules written directly in the stylesheet or in `@layer` blocks are copied, with the rules nested in them kept in place. The block goes at the end of the stylesheet, or at the end of the `@layer` the rules came from. Rules you write in a landscape media query yourself are converted with the landscape settings when `allowMediaQuery` is on.
+
+<div align="right">
+
+[![Back to top][back-to-top]](#readme-top)
+
+</div>
+
+![Values that stay as they are][image-feature-left-alone]
+
+### Values that stay as they are
+
+Strings, `url()` and names that contain a number, such as `var(--space-10px)`, are never converted. Neither are at-rule params such as `@media (min-width: 768px)`, or the descriptors of `@page`, `@property` and `@font-face`.
+
+A `px-conversion-ignore-next` comment before a declaration, or a `px-conversion-ignore-prev` comment after it on the same line, keeps that declaration as it is. The comment is removed from the output.
+
+```css
+.box {
+  /* px-conversion-ignore-next */
+  width: 10px;
+  height: 10px; /* px-conversion-ignore-prev */
+}
+```
+
+`selectorBlacklist`, `selectorWhitelist`, `allowedProperties`, `excludedProperties`, `excludeFiles` and `includeFiles` choose which rules, properties and files are converted. Rules inside `@media` and `@container` are converted only when `allowMediaQuery` is on.
+
+<div align="right">
+
+[![Back to top][back-to-top]](#readme-top)
+
+</div>
+
+## 📦 Installation
 
 ```bash
 npm install postcss postcss-px-conversion --save-dev
 ```
 
-## Usage
+## 🚀 Usage
 
 Add the plugin to your PostCSS configuration:
 
-```javascript
+```js
 // postcss.config.mjs
 export default {
   plugins: {
@@ -49,25 +230,26 @@ export default {
 };
 ```
 
-```css
-/* Input */
-.header {
-  width: 350px;
-  font-size: 15px;
-}
+The plugin can also be imported and called, or passed to PostCSS as it is:
 
-/* Output */
-.header {
-  width: 93.33333vw;
-  font-size: 4vw;
-}
+```js
+// postcss.config.mjs
+import postcssPxConversion from "postcss-px-conversion";
+
+export default {
+  plugins: [postcssPxConversion({ viewportWidth: 375 })],
+};
 ```
 
-### Used in Nuxt 3
+> [!TIP]
+>
+> Tailwind CSS 4 puts its rules in `@layer`, and the plugin converts rules there. Its breakpoints are media queries, so they are converted when `allowMediaQuery` is on.
+
+### Nuxt
 
 `nuxt.config.ts`
 
-```javascript
+```ts
 export default defineNuxtConfig({
   postcss: {
     plugins: {
@@ -99,7 +281,7 @@ With this directory structure, the `index` page is converted and the `active` pa
 
 Sizes in rem follow the font size of the page's `<html>` element. A UI that renders inside pages you do not control, such as a browser extension's content script UI in a shadow root, can convert rem to px to keep the same size everywhere:
 
-```javascript
+```js
 // postcss.config.mjs
 import postcssPxConversion from "postcss-px-conversion";
 
@@ -116,133 +298,99 @@ export default {
 };
 ```
 
-`rootValue` (16 by default) is the number of px in one rem. `minPixelValue: 0` converts small values such as `0.25rem`, and `allowMediaQuery: true` converts rules inside media queries too, such as Tailwind CSS breakpoints.
+`minPixelValue: 0` converts small values such as `0.25rem`, and `allowMediaQuery: true` converts rules inside media queries too, such as Tailwind CSS breakpoints.
 
-### px to rem and px to rpx
+<div align="right">
 
-```javascript
-postcssPxConversion({ viewportUnit: "rem" }); // 24px -> 1.5rem, through rootValue
-postcssPxConversion({ viewportUnit: "rpx", viewportWidth: 375 }); // 10px -> 20rpx, 750rpx is the screen width
-```
+[![Back to top][back-to-top]](#readme-top)
 
-### A different design width per breakpoint
+</div>
 
-`viewportWidth` can be a function. It receives the file path and the position of the declaration: its property, the selector of its rule and the at-rules around it, outermost first. Returning undefined leaves the declaration as it is.
+## ⚙️ Options
 
-```javascript
-postcssPxConversion({
-  allowMediaQuery: true,
-  viewportWidth: (file, { atRules }) => {
-    const desktop = atRules.some(atRule => atRule.name === "media" && atRule.params.includes("min-width: 768px"));
-    return desktop ? 1440 : 375;
-  },
-});
-```
+| Option                   | Default            | Description                                                                                                                                            |
+| ------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `unitType`               | `"px"`             | The unit to convert from. `viewportWidth` and `landscapeViewportWidth` are measured in it.                                                             |
+| `viewportWidth`          | `375`              | The width of the design, or a function that returns it for a file and position. Viewport units and rpx use it.                                         |
+| `rootValue`              | `16`               | How many px one rem is, used to convert rem to px and px to rem.                                                                                       |
+| `unitPrecision`          | `5`                | The number of decimal places in converted values.                                                                                                      |
+| `allowedProperties`      | `["*"]`            | Properties to convert. `*` matches all, `*name*`, `name*` and `*name` match parts of a property, and a leading `!` excludes it.                        |
+| `excludedProperties`     | `[]`               | Properties never to convert, written like `allowedProperties` without `!`.                                                                             |
+| `viewportUnit`           | `"vw"`             | The unit to convert to.                                                                                                                                |
+| `fontViewportUnit`       | `"vw"`             | The unit to convert properties whose name contains `font` to.                                                                                          |
+| `selectorBlacklist`      | `[]`               | Rules whose selector contains one of these strings or matches one of these regular expressions are left alone, together with the rules nested in them. |
+| `selectorWhitelist`      | `[]`               | When not empty, only rules whose own selector, or the selector of a rule around them, matches an entry are converted.                                  |
+| `minPixelValue`          | `1`                | Values up to this number, in `unitType`, are not converted.                                                                                            |
+| `allowMediaQuery`        | `false`            | Convert rules inside `@media` and `@container`.                                                                                                        |
+| `replaceRules`           | `true`             | Replace values in place. When false, the converted declaration is added after the original one.                                                        |
+| `excludeFiles`           | `[]`               | Files to leave alone, matched by path with strings or regular expressions.                                                                             |
+| `includeFiles`           | `[]`               | When not empty, only files whose path matches are converted.                                                                                           |
+| `enableLandscape`        | `false`            | Add a `@media (orientation: landscape)` block with the values converted by `landscapeViewportWidth`.                                                   |
+| `landscapeUnit`          | `"vw"`             | The unit to convert to in landscape.                                                                                                                   |
+| `landscapeViewportWidth` | `568`              | The width of the design in landscape, or a function like `viewportWidth`.                                                                              |
+| `enablePerFileConfig`    | `true`             | Read a width for each file from a comment.                                                                                                             |
+| `viewportWidthComment`   | `"viewport-width"` | The text a per-file width comment starts with.                                                                                                         |
 
-## Options
-
-- `unitType`, default `"px"`: the unit to convert from. `viewportWidth` and `landscapeViewportWidth` are measured in it.
-- `viewportWidth`, default `375`: the width of the design, or a function that returns it for a file and position. Viewport units and rpx use it.
-- `rootValue`, default `16`: how many px one rem is, used to convert rem to px and px to rem.
-- `unitPrecision`, default `5`: the number of decimal places in converted values.
-- `allowedProperties`, default `["*"]`: properties to convert. `*` matches all, `*name*`, `name*` and `*name` match parts of a property, and a leading `!` excludes it.
-- `excludedProperties`, default `[]`: properties never to convert, written like `allowedProperties` without `!`.
-- `viewportUnit`, default `"vw"`: the unit to convert to.
-- `fontViewportUnit`, default `"vw"`: the unit to convert properties whose name contains `font` to.
-- `selectorBlacklist`, default `[]`: rules whose selector contains one of these strings or matches one of these regular expressions are left alone, together with the rules nested in them.
-- `selectorWhitelist`, default `[]`: when not empty, only rules whose own selector, or the selector of a rule around them, matches an entry are converted.
-- `minPixelValue`, default `1`: values up to this number, in `unitType`, are not converted.
-- `allowMediaQuery`, default `false`: convert rules inside `@media` and `@container`.
-- `replaceRules`, default `true`: replace values in place. When false, the converted declaration is added after the original one.
-- `excludeFiles`, default `[]`: files to leave alone, matched by path with strings or regular expressions.
-- `includeFiles`, default `[]`: when not empty, only files whose path matches are converted.
-- `enableLandscape`, default `false`: add a `@media (orientation: landscape)` block with the values converted by `landscapeViewportWidth`.
-- `landscapeUnit`, default `"vw"`: the unit to convert to in landscape.
-- `landscapeViewportWidth`, default `568`: the width of the design in landscape, or a function like `viewportWidth`.
-- `enablePerFileConfig`, default `true`: read a width for each file from a comment, see below.
-- `viewportWidthComment`, default `"viewport-width"`: the text a per-file width comment starts with.
-
-An option set to undefined keeps its default.
-
-## How values are converted
-
-Viewport units such as vw take `value / viewportWidth * 100`, and so do other units, such as vh, svw or cqw. rpx takes `value / viewportWidth * 750`. Converting rem to px multiplies by `rootValue` and converting px to rem divides by it; other conversions to px or rem are not supported, because their size in px is unknown. An unsupported pair, the same unit on both sides or an invalid option throws an error when the plugin is created. A width function that returns 0 or less throws an error too.
-
-The plugin converts numbers in declaration values of style rules, keyframes and `@position-try`. It leaves alone:
-
-- strings and `url()`
-- numbers that are part of a name, such as in `var(--gap-10px)`
-- at-rule params, such as `@media (min-width: 768px)`
-- descriptors of `@page`, `@property` and `@font-face`
+An option set to undefined keeps its default. Invalid options throw an error when the plugin is created, and so does a width function that returns 0 or less.
 
 Types are available on the default export, for example `postcssPxConversion.Options` and `postcssPxConversion.ConversionContext`.
 
-## Per-file width
+<div align="right">
 
-With `enablePerFileConfig`, a comment in a file sets the width for the declarations from that file, even after several files have been combined into one stylesheet. The width is the first number after the comment text, and it has to be greater than 0:
+[![Back to top][back-to-top]](#readme-top)
 
-```css
-/* viewport-width: 1920 */
-.header {
-  width: 1600px; /* converted to 83.33333vw */
-}
-```
+</div>
 
-```css
-/* viewport-width: 375 */
-.header {
-  width: 350px; /* converted to 93.33333vw */
-}
-```
+## 🧮 How values are converted
 
-This lets one build produce stylesheets for desktop, tablet and mobile, for example loaded with media queries:
+| Target                                     | Formula                       | Example, on a 375px design   |
+| ------------------------------------------ | ----------------------------- | ---------------------------- |
+| `vw`, `vh`, `vmin`, `vmax` and other units | `value / viewportWidth * 100` | `320px` becomes `85.33333vw` |
+| `rpx`                                      | `value / viewportWidth * 750` | `320px` becomes `640rpx`     |
+| `rem`, from `unitType` `px`                | `value / rootValue`           | `320px` becomes `20rem`      |
+| `px`, from `unitType` `rem`                | `value * rootValue`           | `1.5rem` becomes `24px`      |
 
-```html
-<link rel="stylesheet" href="desktop.css" media="(min-width: 1280px)" />
-<link rel="stylesheet" href="mobile.css" media="(max-width: 1279px)" />
-```
+Other conversions to px or rem are not supported, because their size in px is unknown. An unsupported pair, or the same unit on both sides, throws an error when the plugin is created. Results round half up to `unitPrecision` decimal places, and a result of 0 is written as `0`.
 
-## Ignoring a declaration
+The plugin converts numbers in declaration values of style rules, keyframes and `@position-try`.
 
-A `px-conversion-ignore-next` comment before a declaration, or a `px-conversion-ignore-prev` comment after it on the same line, keeps it as it is. The comment is removed from the output.
+<div align="right">
 
-```css
-.ignore {
-  /* px-conversion-ignore-next */
-  width: 10px;
-  height: 10px; /* px-conversion-ignore-prev */
-}
-```
+[![Back to top][back-to-top]](#readme-top)
 
-## Landscape
+</div>
 
-With `enableLandscape`, the plugin copies the declarations that change into a `@media (orientation: landscape)` block, converted with `landscapeUnit` and `landscapeViewportWidth`. It copies rules written directly in the stylesheet or in `@layer` blocks, with the rules nested in them kept in place, and checks every copied declaration the same way as for conversion. The block goes at the end of the stylesheet, or at the end of the `@layer` the rules came from. Rules you write in a landscape media query yourself are converted with the landscape settings when `allowMediaQuery` is on.
+## 🤝 Feedback
 
-## Upgrading from 0.1
+If you have any questions or issues, please report them on [GitHub Issues][github-issues-link].
 
-The option names are the same as in 0.1. These behaviors changed:
-
-- Rules inside `@layer`, `@supports`, `@scope` and other at-rules are converted when `allowMediaQuery` is false; the option only covers `@media` and `@container`, also when they are nested in a rule. Tailwind CSS 4 puts every rule in `@layer`, where 0.1 converted nothing.
-- `excludedProperties` takes effect.
-- Rules nested in a rule that `selectorBlacklist` excludes are left alone too, and `selectorWhitelist` accepts rules nested in a listed rule.
-- Keyframes go through the same checks as other rules: `allowedProperties`, `excludedProperties`, `excludeFiles`, `includeFiles`, `allowMediaQuery`, ignore comments and `replaceRules`.
-- Ignore comments work in nested rules.
-- Regular expressions with the `g` flag in selector and file lists match every time.
-- Numbers that are part of a name are left alone, strings with escaped quotes are left alone as a whole, and upper-case units such as `10PX` and numbers such as `1e2px` are converted.
-- Values round half up in decimal, so 1.005 rounds to 1.01.
-- `enableLandscape` works with PostCSS 8; 0.1 threw "AtRule is not a constructor". Landscape copies keep their nesting and `@layer`, contain only declarations that change, leave out declarations with an ignore comment, and never carry over into the next file.
-- A per-file width comment applies to its own file and accepts decimals.
-- `viewportUnit` set to `px`, `rem` or `rpx` converts with `rootValue` or 750 per `viewportWidth`.
-- With `replaceRules`, a value is converted even when the rule already has the converted declaration.
-- Declarations of `@position-try` are converted.
-- Options set to undefined keep their defaults, and invalid options throw an error.
-- `viewportWidth` and `landscapeViewportWidth` functions receive the position of the declaration as a second argument.
-- The plugin can be passed to PostCSS without calling it, as `plugins: [postcssPxConversion]`, and `require()` loads the CommonJS build with its own types.
-
-## Feedback
-
-If you have any questions or issues, please report them on [GitHub Issues](https://github.com/kirklin/postcss-px-conversion/issues).
-
-## License
+---
 
 [MIT](./LICENSE) License &copy; 2023-PRESENT [Kirk Lin](https://github.com/kirklin)
+
+<!-- LINK GROUP -->
+
+[back-to-top]: https://img.shields.io/badge/-BACK_TO_TOP-151515?style=flat-square
+[bundle-link]: https://bundlejs.com/?q=postcss-px-conversion
+[bundle-shield]: https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fdeno.bundlejs.com%2F%3Fq%3Dpostcss-px-conversion&query=%24.size.compressedSize&label=minzip&color=8ae8ff&labelColor=black&style=flat-square
+[changelog]: https://github.com/kirklin/postcss-px-conversion/releases
+[github-issues-link]: https://github.com/kirklin/postcss-px-conversion/issues
+[github-issues-shield]: https://img.shields.io/github/issues/kirklin/postcss-px-conversion?color=ff80eb&labelColor=black&style=flat-square
+[github-license-link]: https://github.com/kirklin/postcss-px-conversion/blob/main/LICENSE
+[github-license-shield]: https://img.shields.io/github/license/kirklin/postcss-px-conversion?color=white&labelColor=black&style=flat-square
+[github-link]: https://github.com/kirklin/postcss-px-conversion
+[github-stars-link]: https://github.com/kirklin/postcss-px-conversion/stargazers
+[github-stars-shield]: https://img.shields.io/github/stars/kirklin/postcss-px-conversion?color=ffcb47&labelColor=black&style=flat-square
+[image-banner]: ./.github/assets/banner.png
+[image-feature-breakpoints]: ./.github/assets/feature-breakpoints.png
+[image-feature-landscape]: ./.github/assets/feature-landscape.png
+[image-feature-left-alone]: ./.github/assets/feature-left-alone.png
+[image-feature-per-file-width]: ./.github/assets/feature-per-file-width.png
+[image-feature-target-units]: ./.github/assets/feature-target-units.png
+[image-feature-viewport-units]: ./.github/assets/feature-viewport-units.png
+[npm-downloads-link]: https://www.npmjs.com/package/postcss-px-conversion
+[npm-downloads-shield]: https://img.shields.io/npm/dm/postcss-px-conversion?color=45cc11&labelColor=black&style=flat-square
+[npm-release-link]: https://www.npmjs.com/package/postcss-px-conversion
+[npm-release-shield]: https://img.shields.io/npm/v/postcss-px-conversion?color=369eff&labelColor=black&logo=npm&logoColor=white&style=flat-square
+[postcss-link]: https://postcss.org
+[postcss-shield]: https://img.shields.io/badge/postcss-8-dd3a0a?labelColor=black&logo=postcss&logoColor=white&style=flat-square
