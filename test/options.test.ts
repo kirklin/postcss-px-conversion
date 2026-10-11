@@ -1,4 +1,5 @@
 import type { Options } from "../src/types";
+import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import postcssPxConversion from "../src";
 import { convert } from "./utils";
@@ -55,5 +56,9 @@ describe("options", () => {
 
   it("only checks landscape options when landscape is enabled", () => {
     expect(() => postcssPxConversion({ landscapeUnit: "px", landscapeViewportWidth: 0 })).not.toThrow();
+  });
+
+  it("works when PostCSS calls the creator itself", () => {
+    expect(postcss([postcssPxConversion]).process(".a { width: 75px }", { from: undefined }).css).toBe(".a { width: 20vw }");
   });
 });
