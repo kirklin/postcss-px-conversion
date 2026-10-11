@@ -69,6 +69,28 @@ describe("px to viewport units", () => {
   });
 });
 
+describe("px and rem through rootValue", () => {
+  it("converts rem to px through rootValue", () => {
+    const options = { unitType: "rem", viewportUnit: "px", fontViewportUnit: "px", minPixelValue: 0 } as const;
+    expect(convert(".a { padding: 0.25rem 1rem; font-size: 0.875rem; margin: -1.5rem }", options)).toBe(
+      ".a { padding: 4px 16px; font-size: 14px; margin: -24px }",
+    );
+    expect(convert(".a { padding: 1rem }", { ...options, rootValue: 10 })).toBe(".a { padding: 10px }");
+  });
+
+  it("compares minPixelValue with the value in unitType", () => {
+    expect(convert(".a { padding: 0.25rem 1rem 1.5rem }", { unitType: "rem", viewportUnit: "px" })).toBe(
+      ".a { padding: 0.25rem 1rem 24px }",
+    );
+  });
+
+  it("converts px to rem through rootValue", () => {
+    expect(convert(".a { width: 24px; height: 1px; margin: 2px }", { viewportUnit: "rem" })).toBe(
+      ".a { width: 1.5rem; height: 1px; margin: 0.125rem }",
+    );
+  });
+});
+
 describe("roundNumberToPrecision", () => {
   it("rounds half up in decimal", () => {
     expect(roundNumberToPrecision(1.005, 2)).toBe(1.01);
@@ -81,5 +103,10 @@ describe("roundNumberToPrecision", () => {
     expect(roundNumberToPrecision(1e-7, 5)).toBe(0);
     expect(roundNumberToPrecision(1.5e-5, 5)).toBe(0.00002);
     expect(roundNumberToPrecision(1e21, 2)).toBe(1e21);
+  });
+
+  it("is used for converted values", () => {
+    const options = { unitType: "rem", viewportUnit: "px", rootValue: 1, unitPrecision: 2, minPixelValue: 0 } as const;
+    expect(convert(".a { width: 1.005rem }", options)).toBe(".a { width: 1.01px }");
   });
 });

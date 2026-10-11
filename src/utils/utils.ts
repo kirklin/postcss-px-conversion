@@ -73,7 +73,7 @@ export function roundNumberToPrecision(number: number, precision: number): numbe
   return number < 0 ? -rounded : rounded;
 }
 
-export function createUnitReplaceFunction(opts: Options, targetUnit: string | number, targetSize: number) {
+export function createUnitReplaceFunction(opts: Options, targetUnit: string | number, factor: number) {
   return (match: string, sign: string, pixelValue: string) => {
     if (!pixelValue) {
       return match;
@@ -84,9 +84,27 @@ export function createUnitReplaceFunction(opts: Options, targetUnit: string | nu
       return match;
     }
 
-    const convertedValue = roundNumberToPrecision((pixels / targetSize) * 100, opts.unitPrecision!);
+    const convertedValue = roundNumberToPrecision(pixels * factor, opts.unitPrecision!);
     return convertedValue === 0 ? "0" : `${sign}${convertedValue}${targetUnit}`;
   };
+}
+
+/**
+ * The number a value in unitType is multiplied by to convert it to targetUnit. px and rem convert into each other
+ * through rootValue; other units scale with the design width, which is read only for them. Undefined leaves the value as it is.
+ * 源单位的数值换算成目标单位时要乘的系数。px 和 rem 之间按 rootValue 换算；其他单位按设计稿宽度换算，
+ * 只有这时才读取宽度。返回 undefined 时数值保持不变。
+ */
+export function getUnitFactor(opts: Options, targetUnit: string, getWidth: () => number | undefined): number | undefined {
+  const unit = targetUnit.toLowerCase();
+  if (unit === "px") {
+    return opts.rootValue;
+  }
+  if (unit === "rem") {
+    return 1 / opts.rootValue;
+  }
+  const width = getWidth();
+  return width ? 100 / width : undefined;
 }
 
 export function doesDeclarationExist(declarations: ContainerWithChildren | undefined, property: string, value: string): boolean | undefined {

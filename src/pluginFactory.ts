@@ -7,6 +7,7 @@ import {
   doesDeclarationExist,
   getClosestRule,
   getStyleRules,
+  getUnitFactor,
   getUnitFromOptions,
   getUnitRegexp,
   hasUnit,
@@ -120,14 +121,14 @@ function handleLandscapeMode(
     }
 
     const sourceFile = declaration.source?.input.file || "";
-    const landscapeSize = getLandscapeSize(options, sourceFile, fileViewportWidths.get(sourceFile));
-    if (!landscapeSize) {
+    const landscapeFactor = getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, fileViewportWidths.get(sourceFile)));
+    if (landscapeFactor === undefined) {
       return;
     }
 
     const landscapeValue = declaration.value.replace(
       unitRegexp,
-      createUnitReplaceFunction(options, options.landscapeUnit, landscapeSize),
+      createUnitReplaceFunction(options, options.landscapeUnit, landscapeFactor),
     );
     // A declaration whose value stays the same, such as `border: 1px solid`, is not copied
     // 值不变的声明（比如 `border: 1px solid`）不复制
@@ -252,14 +253,14 @@ function processDeclaration(
   }
 
   const sourceFile = declaration.source?.input.file || "";
-  const { targetUnit, targetSize } = getTargetUnitAndSize(declaration, options, sourceFile, fileViewportWidths.get(sourceFile));
-  if (!targetSize) {
+  const { targetUnit, factor } = getTargetUnitAndFactor(declaration, options, sourceFile, fileViewportWidths.get(sourceFile));
+  if (factor === undefined) {
     return;
   }
 
   const modifiedValue = declaration.value.replace(
     unitRegexp,
-    createUnitReplaceFunction(options, targetUnit!, targetSize),
+    createUnitReplaceFunction(options, targetUnit, factor),
   );
 
   if (options.replaceRules) {
@@ -306,21 +307,26 @@ function getIgnoreComment(declaration: Declaration, result?: Result): Comment | 
   return undefined;
 }
 
-function getTargetUnitAndSize(
+/**
+ * Get the unit to convert to and the factor to multiply by.
+ * 获取要转换成的单位，以及换算时要乘的系数。
+ */
+function getTargetUnitAndFactor(
   declaration: Declaration,
   options: Options,
   sourceFile: string,
   fileViewportWidth?: number,
-): { targetUnit: string; targetSize: number | undefined } {
+): { targetUnit: string; factor: number | undefined } {
   if (options.enableLandscape && isInsideLandscapeMediaQuery(declaration)) {
     return {
       targetUnit: options.landscapeUnit,
-      targetSize: getLandscapeSize(options, sourceFile, fileViewportWidth),
+      factor: getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, fileViewportWidth)),
     };
   } else {
+    const targetUnit = getUnitFromOptions(declaration.prop, options);
     return {
-      targetUnit: getUnitFromOptions(declaration.prop, options),
-      targetSize: getViewportSize(options, sourceFile, fileViewportWidth),
+      targetUnit,
+      factor: getUnitFactor(options, targetUnit, () => getViewportSize(options, sourceFile, fileViewportWidth)),
     };
   }
 }

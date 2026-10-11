@@ -48,6 +48,13 @@ describe("viewportWidth functions", () => {
     expect(convert(".a { width: 75px }", { viewportWidth: () => 0 })).toBe(".a { width: 75px }");
   });
 
+  it("is not called for px and rem targets", () => {
+    const viewportWidth = (): number => {
+      throw new Error("viewportWidth must not be called");
+    };
+    expect(convert(".a { width: 32px }", { viewportUnit: "rem", viewportWidth })).toBe(".a { width: 2rem }");
+  });
+
   it("is overridden by a per-file comment", () => {
     expect(convert("/* viewport-width: 750 */ .a { width: 75px }", { viewportWidth: () => 375 })).toBe(
       "/* viewport-width: 750 */ .a { width: 10vw }",

@@ -51,6 +51,12 @@ export interface Options {
   viewportWidth: number | ((filePath: string) => number | undefined);
 
   /**
+   * How many px one rem is, used when converting rem to px or px to rem. Default is 16.
+   * 1rem 等于多少 px，rem 转 px 或 px 转 rem 时使用。默认为 16。
+   */
+  rootValue: number;
+
+  /**
    * The number of decimal places allowed for vw units.
    * 允许 vw 单位的最小精度。
    */
@@ -74,6 +80,9 @@ export interface Options {
    *
    * Default is "vw". Supports "vw", "vh", "vmin", "vmax", or any other valid custom string type.
    * 默认为 "vw"。支持 "vw"、"vh"、"vmin"、"vmax"，或其他有效的自定义字符串类型。
+   *
+   * "px" converts from unitType "rem" and "rem" from unitType "px", both through rootValue.
+   * "px" 由 unitType "rem" 换算，"rem" 由 unitType "px" 换算，都按 rootValue 计算。
    */
   viewportUnit: ViewportUnitType;
 
@@ -83,6 +92,9 @@ export interface Options {
    *
    * Default is "vw". Supports "vw", "vh", "vmin", "vmax", or any other valid custom string type.
    * 默认为 "vw"。支持 "vw"、"vh"、"vmin"、"vmax"，或其他有效的自定义字符串类型。
+   *
+   * "px" converts from unitType "rem" and "rem" from unitType "px", both through rootValue.
+   * "px" 由 unitType "rem" 换算，"rem" 由 unitType "px" 换算，都按 rootValue 计算。
    */
   fontViewportUnit: FontViewportUnitType;
 
@@ -143,6 +155,9 @@ export interface Options {
    *
    * Default is "vw". Supports "vw", "vh", "vmin", "vmax", or other valid units.
    * 默认为 "vw"。支持 "vw"、"vh"、"vmin"、"vmax" 或其他符合规范的单位。
+   *
+   * "px" converts from unitType "rem" and "rem" from unitType "px", both through rootValue.
+   * "px" 由 unitType "rem" 换算，"rem" 由 unitType "px" 换算，都按 rootValue 计算。
    */
   landscapeUnit: ViewportUnitType;
 

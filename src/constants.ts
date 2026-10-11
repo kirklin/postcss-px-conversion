@@ -39,6 +39,7 @@ export const FONT_VIEWPORT_UNIT_TYPES = {
 export const DEFAULT_OPTIONS: Options = {
   unitType: UNIT_TYPES.PX,
   viewportWidth: 375,
+  rootValue: 16,
   unitPrecision: 5,
   allowedProperties: ["*"],
   excludedProperties: [],
