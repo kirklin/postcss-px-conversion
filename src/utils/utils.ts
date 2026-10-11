@@ -29,10 +29,6 @@ export function shouldExcludeFile(options: Options, filePath: string): boolean {
   return false;
 }
 
-export function shouldExcludeSelector(options: Options, selector: string): boolean {
-  return shouldExcludeSelectors(options, [selector]);
-}
-
 /**
  * Check the selectors of all the style rules around a declaration: one in the blacklist excludes it,
  * and with a whitelist, at least one of them has to be in it.
