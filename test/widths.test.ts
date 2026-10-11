@@ -1,4 +1,3 @@
-import type { ConversionContext } from "../src/types";
 import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import postcssPxConversion from "../src";
@@ -45,7 +44,7 @@ describe("viewportWidth functions", () => {
   });
 
   it("receives the property, selector and at-rules around the declaration", () => {
-    const contexts: ConversionContext[] = [];
+    const contexts: postcssPxConversion.ConversionContext[] = [];
     convert("@layer base { @media (min-width: 1px) { .a { width: 75px } } } @position-try --top { top: 75px }", {
       allowMediaQuery: true,
       viewportWidth: (_file, context) => {
@@ -71,7 +70,7 @@ describe("viewportWidth functions", () => {
     const css = ".a { width: 150px } @media (min-width: 768px) { .a { width: 150px } }";
     const options = {
       allowMediaQuery: true,
-      viewportWidth: (_file: string, { atRules }: ConversionContext) => atRules.some(atRule => atRule.params.includes("768px")) ? 1500 : 375,
+      viewportWidth: (_file: string, { atRules }: postcssPxConversion.ConversionContext) => atRules.some(atRule => atRule.params.includes("768px")) ? 1500 : 375,
     };
     expect(convert(css, options)).toBe(".a { width: 40vw } @media (min-width: 768px) { .a { width: 10vw } }");
   });

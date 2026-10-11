@@ -1,4 +1,3 @@
-import type { Options } from "../src/types";
 import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import postcssPxConversion from "../src";
@@ -32,7 +31,7 @@ describe("options", () => {
     expect(convert(".a { width: 15px }", { viewportWidth: undefined, viewportUnit: undefined })).toBe(".a { width: 4vw }");
   });
 
-  it.each<[Partial<Options>, string]>([
+  it.each<[Partial<postcssPxConversion.Options>, string]>([
     [{ unitType: "px", viewportUnit: "px" }, "viewportUnit is \"px\", the same unit as unitType"],
     [{ unitType: "em", viewportUnit: "px" }, "viewportUnit \"px\" needs unitType \"rem\"; em has no fixed size in px"],
     [{ unitType: "rem", fontViewportUnit: "rem" }, "fontViewportUnit is \"rem\", the same unit as unitType"],

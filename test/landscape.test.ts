@@ -1,4 +1,3 @@
-import type { ConversionContext } from "../src/types";
 import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import postcssPxConversion from "../src";
@@ -21,7 +20,7 @@ describe("landscape", () => {
   });
 
   it("passes the at-rules around the copied rule to a landscapeViewportWidth function", () => {
-    const contexts: ConversionContext[] = [];
+    const contexts: postcssPxConversion.ConversionContext[] = [];
     convert("@layer base { .a { width: 71px; @media (hover: hover) { height: 71px } } }", {
       ...landscape,
       allowMediaQuery: true,
