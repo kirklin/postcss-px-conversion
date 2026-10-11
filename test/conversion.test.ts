@@ -28,8 +28,8 @@ describe("px to viewport units", () => {
     expect(convert(".a { width: 1.5px }", { unitPrecision: 0, viewportWidth: 1000 })).toBe(".a { width: 0 }");
   });
 
-  it("keeps signs, matches the unit in any case and skips numbers with an exponent", () => {
-    expect(convert(".a { margin: -15px +15px .75e2px 15PX }")).toBe(".a { margin: -4vw +4vw .75e2px 4vw }");
+  it("keeps signs, decimals, exponents and upper-case units", () => {
+    expect(convert(".a { margin: -15px +15px .75e2px 15PX }")).toBe(".a { margin: -4vw +4vw 20vw 4vw }");
   });
 
   it("converts numbers inside functions and var() fallbacks", () => {
