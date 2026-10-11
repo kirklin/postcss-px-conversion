@@ -12,11 +12,11 @@ describe("landscape", () => {
     ));
   });
 
-  it("carries the landscape rules of earlier files into later ones", () => {
+  it("starts over for every file", () => {
     const processor = postcss([postcssPxConversion(landscape)]);
     processor.process(".a { width: 71px }", { from: "/project/a.css" }).toString();
     expect(normalize(processor.process(".b { width: 71px }", { from: "/project/b.css" }).css)).toBe(normalize(
-      ".b { width: 18.93333vw } @media (orientation: landscape) { .a { width: 12.5vw } .b { width: 12.5vw } }",
+      ".b { width: 18.93333vw } @media (orientation: landscape) { .b { width: 12.5vw } }",
     ));
   });
 });

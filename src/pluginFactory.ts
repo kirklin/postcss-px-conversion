@@ -32,14 +32,13 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
   // 创建一个用于匹配允许属性的函数
   const isAllowedProperty = createPropertiesListMatcher(options.allowedProperties);
 
-  // Store landscape at-rules for later processing
-  // 存储横向模式的 at-rules，以便后续处理
-  const landscapeAtRules: AtRule[] = [];
-
   return {
     postcssPlugin: PLUGIN_NAME,
 
-    Once(css: Root, { result }) {
+    Once(css: Root, { result, AtRule }) {
+      // Store landscape at-rules for later processing. Every file starts with an empty list.
+      // 存储横向模式的 at-rules，以便后续处理。每个文件都从空列表开始。
+      const landscapeAtRules: AtRule[] = [];
       let fileViewportWidth: number | undefined;
 
       // 检查文件开头是否有视口宽度配置
@@ -100,9 +99,7 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         // 处理规则内的声明
         processDeclarations(rule, options, sourceFile, isAllowedProperty, unitRegexp, result, fileViewportWidth);
       });
-    },
 
-    OnceExit(css: Root, { AtRule }) {
       // Add landscape media query if necessary
       // 如果需要，添加横向媒体查询
       if (landscapeAtRules.length > 0) {
