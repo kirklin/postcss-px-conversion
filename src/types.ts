@@ -28,6 +28,33 @@ export type ViewportUnitType = typeof VIEWPORT_UNIT_TYPES[keyof typeof VIEWPORT_
 export type FontViewportUnitType = typeof FONT_VIEWPORT_UNIT_TYPES[keyof typeof FONT_VIEWPORT_UNIT_TYPES] | (string & Record<never, never>);
 
 /**
+ * Where a declaration sits, passed to `viewportWidth` and `landscapeViewportWidth` functions.
+ * 声明所在的位置，会传给函数形式的 viewportWidth 和 landscapeViewportWidth。
+ */
+export interface ConversionContext {
+  /**
+   * Property of the declaration.
+   * 声明的属性名。
+   */
+  property: string;
+
+  /**
+   * Selector of the closest rule, or undefined for a declaration directly inside an at-rule such as `@position-try`.
+   * 最近一层规则的选择器；声明直接写在 `@position-try` 这类 at-rule 里时为 undefined。
+   */
+  selector: string | undefined;
+
+  /**
+   * At-rules around the declaration, outermost first.
+   * 包住这条声明的 at-rule，从最外层到最内层。
+   *
+   * @example
+   * [{ name: "layer", params: "utilities" }, { name: "media", params: "(min-width: 768px)" }]
+   */
+  atRules: { name: string; params: string }[];
+}
+
+/**
  * Configuration options for the pixel to viewport unit conversion.
  * 像素到视口单位转换的配置选项。
  */
@@ -45,10 +72,11 @@ export interface Options {
    * The width of the viewport.
    * 视口的宽度。
    *
-   * Can be a number or a function that returns a number based on the file path.
-   * 可以是一个数值，或是一个根据文件路径返回数值的函数。
+   * Can be a number or a function that returns a number based on the file path and where the declaration sits.
+   * Returning undefined leaves the declaration as it is.
+   * 可以是一个数值，或是一个根据文件路径和声明所在位置返回数值的函数。函数返回 undefined 时，这条声明保持不变。
    */
-  viewportWidth: number | ((filePath: string) => number | undefined);
+  viewportWidth: number | ((filePath: string, context: ConversionContext) => number | undefined);
 
   /**
    * How many px one rem is, used when converting rem to px or px to rem. Default is 16.
@@ -171,10 +199,11 @@ export interface Options {
    * Viewport width for landscape orientation.
    * 横向模式下的视口宽度。
    *
-   * Can be a number or a function that returns a number based on the file path.
-   * 可以是一个数值，或是一个根据文件路径返回数值的函数。
+   * Can be a number or a function that returns a number based on the file path and where the declaration sits.
+   * Returning undefined leaves the declaration as it is.
+   * 可以是一个数值，或是一个根据文件路径和声明所在位置返回数值的函数。函数返回 undefined 时，这条声明保持不变。
    */
-  landscapeViewportWidth: number | ((filePath: string) => number | undefined);
+  landscapeViewportWidth: number | ((filePath: string, context: ConversionContext) => number | undefined);
 
   /**
    * Enable per-file viewport width configuration.

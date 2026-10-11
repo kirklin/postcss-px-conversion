@@ -1,3 +1,4 @@
+import type { ConversionContext } from "../src/types";
 import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import postcssPxConversion from "../src";
@@ -10,6 +11,29 @@ describe("landscape", () => {
     expect(normalize(convert(".a { width: 71px; color: red } .b { color: blue }", landscape))).toBe(normalize(
       ".a { width: 18.93333vw; color: red } .b { color: blue } @media (orientation: landscape) { .a { width: 12.5vw } }",
     ));
+  });
+
+  it("uses landscapeUnit and a landscapeViewportWidth function", () => {
+    const options = { ...landscape, landscapeUnit: "vh", landscapeViewportWidth: () => 710 };
+    expect(normalize(convert(".a { width: 71px }", options))).toBe(normalize(
+      ".a { width: 18.93333vw } @media (orientation: landscape) { .a { width: 10vh } }",
+    ));
+  });
+
+  it("passes the at-rules around the copied rule to a landscapeViewportWidth function", () => {
+    const contexts: ConversionContext[] = [];
+    convert("@layer base { .a { width: 71px; @media (hover: hover) { height: 71px } } }", {
+      ...landscape,
+      allowMediaQuery: true,
+      landscapeViewportWidth: (_file, context) => {
+        contexts.push(context);
+        return 568;
+      },
+    });
+    expect(contexts).toEqual([
+      { property: "width", selector: ".a", atRules: [{ name: "layer", params: "base" }] },
+      { property: "height", selector: ".a", atRules: [{ name: "layer", params: "base" }, { name: "media", params: "(hover: hover)" }] },
+    ]);
   });
 
   it("keeps the block inside the cascade layer of its rules", () => {

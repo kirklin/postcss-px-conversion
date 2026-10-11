@@ -1,11 +1,13 @@
 import type { AtRule, Comment, Container, Declaration, Plugin, Result, Root, Rule } from "postcss";
-import type { Options } from "./types";
+import type { ConversionContext, Options } from "./types";
 import { IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 import {
   createPropertiesListMatcher,
   createUnitReplaceFunction,
   doesDeclarationExist,
+  getAtRules,
   getClosestRule,
+  getConversionContext,
   getStyleRules,
   getUnitFactor,
   getUnitFromOptions,
@@ -107,6 +109,9 @@ function handleLandscapeMode(
   fileViewportWidths: Map<string, number>,
 ): void {
   const landscapeRule = rule.clone();
+  // The copy has no parent, so width functions get the at-rules around the original rule from here
+  // 副本没有父节点，宽度函数从这里拿到原规则外面的 at-rule
+  const outerAtRules = getAtRules(rule);
 
   // Decide for every declaration before changing any, so ignore comments still sit next to their declarations
   // 先决定每条声明的去留再修改，这样忽略注释仍然紧挨着它们的声明
@@ -121,7 +126,8 @@ function handleLandscapeMode(
     }
 
     const sourceFile = declaration.source?.input.file || "";
-    const landscapeFactor = getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, fileViewportWidths.get(sourceFile)));
+    const getContext = (): ConversionContext => getConversionContext(declaration, outerAtRules);
+    const landscapeFactor = getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, getContext, fileViewportWidths.get(sourceFile)));
     if (landscapeFactor === undefined) {
       return;
     }
@@ -184,12 +190,12 @@ function removeEmptyContainers(container: Container): void {
  * Get the landscape size based on options.
  * 根据选项获取横向尺寸。
  */
-function getLandscapeSize(options: Options, sourceFile: string, fileViewportWidth?: number): number | undefined {
+function getLandscapeSize(options: Options, sourceFile: string, getContext: () => ConversionContext, fileViewportWidth?: number): number | undefined {
   if (fileViewportWidth) {
     return fileViewportWidth;
   }
   if (typeof options.landscapeViewportWidth === "function") {
-    return options.landscapeViewportWidth(sourceFile);
+    return options.landscapeViewportWidth(sourceFile, getContext());
   }
   return options.landscapeViewportWidth;
 }
@@ -317,16 +323,17 @@ function getTargetUnitAndFactor(
   sourceFile: string,
   fileViewportWidth?: number,
 ): { targetUnit: string; factor: number | undefined } {
+  const getContext = (): ConversionContext => getConversionContext(declaration);
   if (options.enableLandscape && isInsideLandscapeMediaQuery(declaration)) {
     return {
       targetUnit: options.landscapeUnit,
-      factor: getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, fileViewportWidth)),
+      factor: getUnitFactor(options, options.landscapeUnit, () => getLandscapeSize(options, sourceFile, getContext, fileViewportWidth)),
     };
   } else {
     const targetUnit = getUnitFromOptions(declaration.prop, options);
     return {
       targetUnit,
-      factor: getUnitFactor(options, targetUnit, () => getViewportSize(options, sourceFile, fileViewportWidth)),
+      factor: getUnitFactor(options, targetUnit, () => getViewportSize(options, sourceFile, getContext, fileViewportWidth)),
     };
   }
 }
@@ -335,12 +342,12 @@ function getTargetUnitAndFactor(
  * Get the viewport size based on options.
  * 根据选项获取视口尺寸。
  */
-function getViewportSize(options: Options, sourceFile: string, fileViewportWidth?: number): number | undefined {
+function getViewportSize(options: Options, sourceFile: string, getContext: () => ConversionContext, fileViewportWidth?: number): number | undefined {
   if (fileViewportWidth) {
     return fileViewportWidth;
   }
   if (typeof options.viewportWidth === "function") {
-    return options.viewportWidth(sourceFile);
+    return options.viewportWidth(sourceFile, getContext());
   }
   return options.viewportWidth;
 }

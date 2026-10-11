@@ -1,3 +1,4 @@
+import type { ConversionContext } from "../src/types";
 import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 import postcssPxConversion from "../src";
@@ -41,6 +42,38 @@ describe("viewportWidth functions", () => {
     const options = { viewportWidth: (file: string) => file.includes("desktop") ? 1500 : 375 };
     expect(convert(".a { width: 75px }", options, "/project/src/desktop.css")).toBe(".a { width: 5vw }");
     expect(convert(".a { width: 75px }", options, "/project/src/mobile.css")).toBe(".a { width: 20vw }");
+  });
+
+  it("receives the property, selector and at-rules around the declaration", () => {
+    const contexts: ConversionContext[] = [];
+    convert("@layer base { @media (min-width: 1px) { .a { width: 75px } } } @position-try --top { top: 75px }", {
+      allowMediaQuery: true,
+      viewportWidth: (_file, context) => {
+        contexts.push(context);
+        return 375;
+      },
+    });
+    expect(contexts).toEqual([
+      {
+        property: "width",
+        selector: ".a",
+        atRules: [{ name: "layer", params: "base" }, { name: "media", params: "(min-width: 1px)" }],
+      },
+      {
+        property: "top",
+        selector: undefined,
+        atRules: [{ name: "position-try", params: "--top" }],
+      },
+    ]);
+  });
+
+  it("can use a different design width for each breakpoint", () => {
+    const css = ".a { width: 150px } @media (min-width: 768px) { .a { width: 150px } }";
+    const options = {
+      allowMediaQuery: true,
+      viewportWidth: (_file: string, { atRules }: ConversionContext) => atRules.some(atRule => atRule.params.includes("768px")) ? 1500 : 375,
+    };
+    expect(convert(css, options)).toBe(".a { width: 40vw } @media (min-width: 768px) { .a { width: 10vw } }");
   });
 
   it("leaves the declaration when the function returns undefined or 0", () => {

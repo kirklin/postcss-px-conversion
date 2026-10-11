@@ -1,6 +1,6 @@
-import type { AtRule, Node, Rule } from "postcss";
+import type { AtRule, Declaration, Node, Rule } from "postcss";
 import type { ContainerWithChildren } from "postcss/lib/container";
-import type { Options } from "../types";
+import type { ConversionContext, Options } from "../types";
 
 /**
  * Whether a string or regular expression from a list matches the text. A regular expression with the `g` or `y` flag
@@ -125,6 +125,33 @@ export function getClosestRule(node: Node): Rule | undefined {
     }
   }
   return undefined;
+}
+
+/**
+ * The at-rules around a node, innermost first.
+ * 节点外面的所有 at-rule，从内到外。
+ */
+export function getAtRules(node: Node): AtRule[] {
+  const atRules: AtRule[] = [];
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent.type === "atrule") {
+      atRules.push(parent as AtRule);
+    }
+  }
+  return atRules;
+}
+
+/**
+ * Where a declaration sits, for width functions. A landscape copy is not in the stylesheet yet,
+ * so the at-rules around the rule it was copied from are passed in.
+ * 声明所在的位置，传给宽度函数。横向副本还没有放进样式表，所以要传入被复制的规则外面的 at-rule。
+ */
+export function getConversionContext(declaration: Declaration, outerAtRules: AtRule[] = []): ConversionContext {
+  return {
+    property: declaration.prop,
+    selector: getClosestRule(declaration)?.selector,
+    atRules: [...getAtRules(declaration), ...outerAtRules].reverse().map(({ name, params }) => ({ name, params })),
+  };
 }
 
 /**
