@@ -12,7 +12,7 @@ const filterPropertiesList: Record<string, PropFilterFunction> = {
   notExact: createRegexFilter(/^![^*].*$/, 1),
   notContain: createRegexFilter(/^!\*.+\*$/, 2, -1),
   notEndWith: createRegexFilter(/^!\*[^*]+$/, 2),
-  notStartWith: createRegexFilter(/^![^*]+\*$/, 1, -2),
+  notStartWith: createRegexFilter(/^![^*]+\*$/, 1, -1),
 };
 
 function createPropertiesListMatcher(propList: string[]): (prop: string) => boolean {

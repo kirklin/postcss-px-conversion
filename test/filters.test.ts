@@ -27,6 +27,12 @@ describe("properties", () => {
     );
   });
 
+  it("reads the whole prefix of a negated pattern", () => {
+    expect(convert(".a { margin: 15px; margix: 15px }", { allowedProperties: ["*", "!margin*"] })).toBe(
+      ".a { margin: 15px; margix: 4vw }",
+    );
+  });
+
   it("leaves properties listed in excludedProperties", () => {
     expect(convert(css, { excludedProperties: ["border*", "scroll-margin-top"] })).toBe(
       ".a { width: 4vw; margin-top: 4vw; scroll-margin-top: 15px; border-width: 15px }",
