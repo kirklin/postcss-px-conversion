@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.1.4",
   "packageManager": "pnpm@12.11.2",
-  "description": "",
+  "description": "PostCSS plugin that converts px to viewport units, px to rem, rem to px and px to rpx",
   "author": "Kirk Lin <https://github.com/kirklin>",
   "license": "MIT",
   "funding": "https://www.buymeacoffee.com/linkirk",
@@ -13,7 +13,18 @@
     "url": "git+https://github.com/kirklin/postcss-px-conversion.git"
   },
   "bugs": "https://github.com/kirklin/postcss-px-conversion/issues",
-  "keywords": [],
+  "keywords": [
+    "postcss",
+    "postcss-plugin",
+    "px",
+    "vw",
+    "viewport",
+    "rem",
+    "rpx",
+    "px-to-viewport",
+    "pxtorem",
+    "rem-to-px"
+  ],
   "sideEffects": false,
   "exports": {
     ".": {
@@ -52,7 +63,7 @@
     "up": "taze latest -r -w -I"
   },
   "peerDependencies": {
-    "postcss": ">=8.0.0"
+    "postcss": "^8.0.0"
   },
   "devDependencies": {
     "@antfu/ni": "catalog:cli",
