@@ -64,15 +64,16 @@ describe("px to viewport units", () => {
 });
 
 describe("roundNumberToPrecision", () => {
-  it("rounds the binary value, so some halves round down", () => {
-    expect(roundNumberToPrecision(1.005, 2)).toBe(1);
-    expect(roundNumberToPrecision(1.255, 2)).toBe(1.25);
+  it("rounds half up in decimal", () => {
+    expect(roundNumberToPrecision(1.005, 2)).toBe(1.01);
+    expect(roundNumberToPrecision(1.255, 2)).toBe(1.26);
     expect(roundNumberToPrecision(2.666666, 5)).toBe(2.66667);
+    expect(roundNumberToPrecision(-1.005, 2)).toBe(-1.01);
   });
 
-  it("multiplies before rounding, which can change very large numbers", () => {
+  it("handles numbers JavaScript prints with an exponent", () => {
     expect(roundNumberToPrecision(1e-7, 5)).toBe(0);
     expect(roundNumberToPrecision(1.5e-5, 5)).toBe(0.00002);
-    expect(roundNumberToPrecision(1e21, 2)).toBe(1e23 / 100);
+    expect(roundNumberToPrecision(1e21, 2)).toBe(1e21);
   });
 });

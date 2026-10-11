@@ -50,8 +50,13 @@ export function getUnitFromOptions(prop: string | string[], opts: Options): stri
 
 export function roundNumberToPrecision(number: number, precision: number): number {
   // 四舍五入数字到指定的小数位数精度
-  const multiplier = 10 ** precision;
-  return Math.round(number * multiplier) / multiplier;
+  // The decimal point moves through the string form: 1.005 * 100 is 100.49999… in binary,
+  // while "1.005e2" is exactly 100.5, so halves round up as written.
+  const [mantissa, exponent = "0"] = String(Math.abs(number)).split("e");
+  const shifted = Math.round(Number(`${mantissa}e${Number(exponent) + precision}`));
+  const [shiftedMantissa, shiftedExponent = "0"] = String(shifted).split("e");
+  const rounded = Number(`${shiftedMantissa}e${Number(shiftedExponent) - precision}`);
+  return number < 0 ? -rounded : rounded;
 }
 
 export function createUnitReplaceFunction(opts: Options, targetUnit: string | number, targetSize: number) {
