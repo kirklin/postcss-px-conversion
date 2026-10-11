@@ -28,9 +28,12 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
   // 获取用于匹配单位类型的正则表达式
   const unitRegexp = getUnitRegexp(options.unitType);
 
-  // Create a matcher function for allowed properties
-  // 创建一个用于匹配允许属性的函数
-  const isAllowedProperty = createPropertiesListMatcher(options.allowedProperties);
+  // Create a matcher function for allowed properties. Excluded properties work like negated entries.
+  // 创建一个用于匹配允许属性的函数。排除的属性按带 `!` 的条目处理。
+  const isAllowedProperty = createPropertiesListMatcher([
+    ...options.allowedProperties,
+    ...options.excludedProperties.map(property => `!${property}`),
+  ]);
 
   return {
     postcssPlugin: PLUGIN_NAME,

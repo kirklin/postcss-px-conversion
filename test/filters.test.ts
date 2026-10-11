@@ -27,9 +27,9 @@ describe("properties", () => {
     );
   });
 
-  it("ignores excludedProperties", () => {
+  it("leaves properties listed in excludedProperties", () => {
     expect(convert(css, { excludedProperties: ["border*", "scroll-margin-top"] })).toBe(
-      ".a { width: 4vw; margin-top: 4vw; scroll-margin-top: 4vw; border-width: 4vw }",
+      ".a { width: 4vw; margin-top: 4vw; scroll-margin-top: 15px; border-width: 15px }",
     );
   });
 
