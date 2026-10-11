@@ -10,12 +10,21 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@codemirror/commands": "catalog:playground",
+    "@codemirror/lang-css": "catalog:playground",
+    "@codemirror/lang-html": "catalog:playground",
+    "@codemirror/lang-javascript": "catalog:playground",
+    "@codemirror/language": "catalog:playground",
+    "@codemirror/state": "catalog:playground",
+    "@codemirror/view": "catalog:playground",
+    "@fontsource-variable/geist": "catalog:playground",
     "@kirklin/reset-css": "catalog:playground",
+    "@lezer/highlight": "catalog:playground",
+    "postcss": "catalog:testing",
     "vue": "catalog:playground"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "catalog:playground",
-    "sass": "catalog:playground",
     "vite": "catalog:playground",
     "vue-tsc": "catalog:playground"
   }

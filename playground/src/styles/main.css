@@ -1,0 +1,146 @@
+@font-face {
+  font-family: "Kirk Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("../assets/fonts/kirk-mono.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Kirk Mono";
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("../assets/fonts/kirk-mono-italic.woff2") format("woff2");
+}
+
+:root {
+  color-scheme: light;
+  --bg: #f7f7f8;
+  --surface: #ffffff;
+  --surface-sunken: #f1f1f3;
+  --surface-foot: #fcfcfd;
+  --hover: #f1f1f3;
+  --ink: #0a0a0b;
+  --ink-2: #3f3f46;
+  --muted: #71717a;
+  --faint: #a1a1aa;
+  --line: #e4e4e7;
+  --line-soft: #efeff1;
+  --line-strong: #d4d4d8;
+  --accent: #1d4ed8;
+  --accent-strong: #1d4ed8;
+  --accent-soft: #eff6ff;
+  --accent-soft-solid: #eff6ff;
+  --accent-ring: #bfdbfe;
+  --danger: #b91c1c;
+  --danger-soft: #fee2e2;
+  --danger-ring: #fecaca;
+  --danger-surface: #fef2f2;
+  --warning: #a16207;
+  --warning-soft: #fef3c7;
+  --warning-ring: #fde68a;
+  --warning-surface: #fffbeb;
+  --code-string: #047857;
+  --selection: rgba(29, 78, 216, 0.14);
+  --active-line: rgba(10, 10, 11, 0.025);
+  --switch-off: #d4d4d8;
+  --button: #0a0a0b;
+  --button-text: #ffffff;
+  --mark: linear-gradient(180deg, #232327, #0a0a0b);
+  --mark-ring: rgba(255, 255, 255, 0.08);
+  --shadow-card: 0 1px 2px rgba(24, 24, 27, 0.04), 0 12px 24px -16px rgba(24, 24, 27, 0.1);
+  --shadow-pop: 0 1px 2px rgba(24, 24, 27, 0.06), 0 16px 32px -12px rgba(24, 24, 27, 0.2);
+  --shadow-device:
+    0 1px 2px rgba(30, 64, 175, 0.06), 0 12px 24px -12px rgba(30, 64, 175, 0.14),
+    0 36px 72px -28px rgba(30, 64, 175, 0.3);
+  --stage:
+    radial-gradient(520px 320px at 18% 0%, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(135deg, #cfe2ff 0%, #dbeafe 45%, #e4f3ff 100%);
+  --stage-grid: rgba(255, 255, 255, 0.55);
+  --stage-control: rgba(255, 255, 255, 0.6);
+  --sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --mono: "Kirk Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --default-font-family: var(--sans);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0a0a0c;
+  --surface: #131316;
+  --surface-sunken: #1e1e23;
+  --surface-foot: #111114;
+  --hover: #1e1e23;
+  --ink: #f4f4f5;
+  --ink-2: #d4d4d8;
+  --muted: #a1a1aa;
+  --faint: #71717a;
+  --line: #27272a;
+  --line-soft: #1f1f23;
+  --line-strong: #3f3f46;
+  --accent: #8ab8ff;
+  --accent-strong: #3b82f6;
+  --accent-soft: rgba(96, 165, 250, 0.13);
+  --accent-soft-solid: #15233d;
+  --accent-ring: rgba(96, 165, 250, 0.34);
+  --danger: #fca5a5;
+  --danger-soft: rgba(248, 113, 113, 0.14);
+  --danger-ring: rgba(248, 113, 113, 0.32);
+  --danger-surface: #2a1517;
+  --warning: #fcd34d;
+  --warning-soft: rgba(250, 204, 21, 0.12);
+  --warning-ring: rgba(250, 204, 21, 0.3);
+  --warning-surface: #2a2410;
+  --code-string: #6ee7b7;
+  --selection: rgba(138, 184, 255, 0.22);
+  --active-line: rgba(255, 255, 255, 0.03);
+  --switch-off: #3f3f46;
+  --button: #f4f4f5;
+  --button-text: #0a0a0b;
+  --mark: linear-gradient(180deg, #3a3a42, #1f1f24);
+  --mark-ring: rgba(255, 255, 255, 0.16);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 24px -16px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 1px 2px rgba(0, 0, 0, 0.5), 0 16px 32px -12px rgba(0, 0, 0, 0.7);
+  --shadow-device: 0 1px 2px rgba(0, 0, 0, 0.4), 0 24px 48px -20px rgba(0, 0, 0, 0.8);
+  --stage:
+    radial-gradient(520px 320px at 18% 0%, rgba(138, 184, 255, 0.14), rgba(138, 184, 255, 0) 70%),
+    linear-gradient(135deg, #0e1a33 0%, #102142 45%, #0c1a30 100%);
+  --stage-grid: rgba(255, 255, 255, 0.05);
+  --stage-control: rgba(10, 10, 12, 0.5);
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

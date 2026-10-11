@@ -17,5 +17,5 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
-  "include": ["src", "types", "vite.config.ts"]
+  "include": ["src", "test", "types", "vite.config.ts"]
 }
