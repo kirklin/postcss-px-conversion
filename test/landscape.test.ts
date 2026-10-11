@@ -12,6 +12,17 @@ describe("landscape", () => {
     ));
   });
 
+  it("copies only declarations that change", () => {
+    expect(normalize(convert(".a { border: 1px solid; width: 71px } .b { border: 1px solid }", landscape))).toBe(normalize(
+      ".a { border: 1px solid; width: 18.93333vw } .b { border: 1px solid } @media (orientation: landscape) { .a { width: 12.5vw } }",
+    ));
+  });
+
+  it("does not add a block when nothing changes", () => {
+    expect(convert(".a { color: red }", landscape)).toBe(".a { color: red }");
+    expect(convert(".a { border: 1px solid }", landscape)).toBe(".a { border: 1px solid }");
+  });
+
   it("does not copy a nested rule on its own", () => {
     const css = "@media print { .a { .b { width: 71px } } }";
     expect(convert(css, landscape)).toBe(css);

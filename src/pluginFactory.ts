@@ -119,14 +119,17 @@ function handleLandscapeMode(
       return;
     }
 
-    landscapeRule.append(
-      declaration.clone({
-        value: declaration.value.replace(
-          unitRegexp,
-          createUnitReplaceFunction(options, options.landscapeUnit, landscapeSize),
-        ),
-      }),
+    const landscapeValue = declaration.value.replace(
+      unitRegexp,
+      createUnitReplaceFunction(options, options.landscapeUnit, landscapeSize),
     );
+    // A declaration whose value stays the same, such as `border: 1px solid`, is not copied
+    // 值不变的声明（比如 `border: 1px solid`）不复制
+    if (landscapeValue === declaration.value) {
+      return;
+    }
+
+    landscapeRule.append(declaration.clone({ value: landscapeValue }));
   });
 
   if (landscapeRule.nodes.length > 0) {
