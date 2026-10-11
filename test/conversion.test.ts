@@ -1,0 +1,74 @@
+import { describe, expect, it } from "vitest";
+import { roundNumberToPrecision } from "../src/utils";
+import { convert } from "./utils";
+
+describe("px to viewport units", () => {
+  it("divides by viewportWidth and multiplies by 100", () => {
+    expect(convert(".a { width: 75px; height: 375px; margin: 10px 20px }")).toBe(
+      ".a { width: 20vw; height: 100vw; margin: 2.66667vw 5.33333vw }",
+    );
+  });
+
+  it("uses fontViewportUnit for properties whose name contains font", () => {
+    expect(convert(".a { font-size: 15px; line-height: 15px; --font-gap: 15px }", { fontViewportUnit: "vmin" })).toBe(
+      ".a { font-size: 4vmin; line-height: 4vw; --font-gap: 4vmin }",
+    );
+  });
+
+  it("keeps values up to minPixelValue", () => {
+    expect(convert(".a { border: 1px solid; width: 0.5px; height: 2px; top: 0px }")).toBe(
+      ".a { border: 1px solid; width: 0.5px; height: 0.53333vw; top: 0px }",
+    );
+    expect(convert(".a { border: 1px solid }", { minPixelValue: 0 })).toBe(".a { border: 0.26667vw solid }");
+  });
+
+  it("rounds to unitPrecision and writes 0 without a unit", () => {
+    expect(convert(".a { width: 10px }", { unitPrecision: 2 })).toBe(".a { width: 2.67vw }");
+    expect(convert(".a { width: 10px }", { unitPrecision: 0 })).toBe(".a { width: 3vw }");
+    expect(convert(".a { width: 1.5px }", { unitPrecision: 0, viewportWidth: 1000 })).toBe(".a { width: 0 }");
+  });
+
+  it("matches the unit after any digits, even inside an exponent, and only in lower case", () => {
+    expect(convert(".a { margin: -15px +15px .75e2px 15PX }")).toBe(".a { margin: -4vw +4vw .75e0.53333vw 15PX }");
+  });
+
+  it("converts numbers inside functions and var() fallbacks", () => {
+    expect(convert(".a { width: calc(100% - 15px); transform: translate(-15px, 15px); height: var(--h, 15px) }")).toBe(
+      ".a { width: calc(100% - 4vw); transform: translate(-4vw, 4vw); height: var(--h, 4vw) }",
+    );
+  });
+
+  it("leaves strings and url() but changes names that contain a number with the unit", () => {
+    expect(convert(".a { content: \"15px\"; background: url(icon-15px.png); width: var(--gap-15px); grid-area: a15px }")).toBe(
+      ".a { content: \"15px\"; background: url(icon-15px.png); width: var(--gap-4vw); grid-area: a4vw }",
+    );
+  });
+
+  it("converts custom properties", () => {
+    expect(convert(":root { --gap: 15px }")).toBe(":root { --gap: 4vw }");
+  });
+
+  it("keeps !important", () => {
+    expect(convert(".a { width: 15px !important }")).toBe(".a { width: 4vw !important }");
+  });
+
+  it("measures viewportWidth in unitType", () => {
+    expect(convert(".a { width: 1rem }", { unitType: "rem", viewportWidth: 375 / 16, minPixelValue: 0 })).toBe(
+      ".a { width: 4.26667vw }",
+    );
+  });
+});
+
+describe("roundNumberToPrecision", () => {
+  it("rounds the binary value, so some halves round down", () => {
+    expect(roundNumberToPrecision(1.005, 2)).toBe(1);
+    expect(roundNumberToPrecision(1.255, 2)).toBe(1.25);
+    expect(roundNumberToPrecision(2.666666, 5)).toBe(2.66667);
+  });
+
+  it("multiplies before rounding, which can change very large numbers", () => {
+    expect(roundNumberToPrecision(1e-7, 5)).toBe(0);
+    expect(roundNumberToPrecision(1.5e-5, 5)).toBe(0.00002);
+    expect(roundNumberToPrecision(1e21, 2)).toBe(1e23 / 100);
+  });
+});
