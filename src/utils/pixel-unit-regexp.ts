@@ -9,7 +9,7 @@ export function getUnitRegexp(unit: string): RegExp {
   // A number counts only as a whole token: digits inside names such as `--gap-10px` are left alone.
   // Group 1 is the sign, group 2 the number.
   return new RegExp(
-    `"[^"]+"|'[^']+'|url\\([^\\)]+\\)|(?<![\\w.-])([+-]?)(\\d*\\.?\\d+(?:e[+-]?\\d+)?)${unit}(?![\\w-])`,
+    `"(?:[^"\\\\]|\\\\.)*"|'(?:[^'\\\\]|\\\\.)*'|url\\([^)]*\\)|(?<![\\w.-])([+-]?)(\\d*\\.?\\d+(?:e[+-]?\\d+)?)${unit}(?![\\w-])`,
     "gi",
   );
 }

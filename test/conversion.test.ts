@@ -43,6 +43,11 @@ describe("px to viewport units", () => {
     expect(convert(css)).toBe(css);
   });
 
+  it("reads to the end of strings that contain escaped quotes", () => {
+    const css = String.raw`.a { content: "a\"15px"; quotes: '\'15px' }`;
+    expect(convert(css)).toBe(css);
+  });
+
   it("converts custom properties", () => {
     expect(convert(":root { --gap: 15px }")).toBe(":root { --gap: 4vw }");
   });
