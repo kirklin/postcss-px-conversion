@@ -102,11 +102,11 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
       });
     },
 
-    OnceExit(css: Root) {
+    OnceExit(css: Root, { AtRule }) {
       // Add landscape media query if necessary
       // 如果需要，添加横向媒体查询
       if (landscapeAtRules.length > 0) {
-        addLandscapeMediaQuery(css, landscapeAtRules);
+        addLandscapeMediaQuery(css, landscapeAtRules, AtRule);
       }
     },
   };
@@ -279,8 +279,9 @@ function getViewportSize(options: Options, sourceFile: string, fileViewportWidth
  * Add landscape media query to the CSS.
  * 向 CSS 添加横向媒体查询。
  */
-function addLandscapeMediaQuery(css: Root, landscapeAtRules: AtRule[]): void {
-  const landscapeMediaRule = new (css.constructor as any).AtRule({
+function addLandscapeMediaQuery(css: Root, landscapeAtRules: AtRule[], AtRuleNode: typeof AtRule): void {
+  // The node classes come with the helpers PostCSS passes to the plugin; Root has no AtRule on it.
+  const landscapeMediaRule = new AtRuleNode({
     params: "(orientation: landscape)",
     name: "media",
     nodes: landscapeAtRules,
