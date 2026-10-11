@@ -13,7 +13,6 @@ import {
   isInsideLandscapeMediaQuery,
   isInsideMediaQuery,
   shouldExcludeFile,
-  shouldExcludeSelector,
   shouldExcludeSelectors,
 } from "./utils";
 
@@ -63,20 +62,12 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         });
       }
       css.walkRules((rule) => {
-        const sourceFile = rule.source?.input.file || "";
-
-        // Check if the rule should be excluded based on file path or selector
-        // 检查是否应该根据文件路径或选择器排除该规则
-        if (shouldExcludeFile(options, sourceFile) || shouldExcludeSelector(options, rule.selector)) {
-          return undefined;
-        }
-
         // Handle landscape mode if enabled. A rule nested in another rule is not copied on its own: the copy would lose the selector around it.
         // 如果启用了横向模式，则处理横向模式。嵌套在别的规则里的规则不单独复制：复制出去会丢掉外层的选择器。
         // eslint-disable-next-line ts/ban-ts-comment
         // @ts-expect-error
         if (options.enableLandscape && rule.parent?.type !== "rule" && !rule.parent?.params) {
-          handleLandscapeMode(rule, options, sourceFile, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
+          handleLandscapeMode(rule, options, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
         }
       });
 
@@ -96,13 +87,13 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
 }
 
 /**
- * Handle landscape mode for a given rule. The copy keeps nested rules and at-rules in their place.
- * 处理给定规则的横向模式。副本里嵌套的规则和 at-rule 保持原来的位置。
+ * Handle landscape mode for a given rule. The copy keeps nested rules and at-rules in their place,
+ * and its declarations go through the same checks as for conversion.
+ * 处理给定规则的横向模式。副本里嵌套的规则和 at-rule 保持原来的位置，副本里的声明和转换时经过同样的检查。
  */
 function handleLandscapeMode(
   rule: Rule,
   options: Options,
-  sourceFile: string,
   landscapeAtRules: AtRule[],
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
@@ -114,7 +105,7 @@ function handleLandscapeMode(
   // 先决定每条声明的去留再修改，这样忽略注释仍然紧挨着它们的声明
   const landscapeValues = new Map<Declaration, string>();
   landscapeRule.walkDecls((declaration) => {
-    if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
+    if (!shouldConvertDeclaration(declaration, options, isAllowedProperty)) {
       return;
     }
 
@@ -122,6 +113,7 @@ function handleLandscapeMode(
       return;
     }
 
+    const sourceFile = declaration.source?.input.file || "";
     const landscapeSize = getLandscapeSize(options, sourceFile, fileViewportWidth);
     if (!landscapeSize) {
       return;
@@ -195,6 +187,41 @@ function getLandscapeSize(options: Options, sourceFile: string, fileViewportWidt
 }
 
 /**
+ * Whether a declaration is one this plugin converts, before its ignore comments are checked.
+ * Conversion and the landscape copy both ask this.
+ * 一条声明是否属于本插件要转换的范围（忽略注释另外检查）。转换和横向副本都用它判断。
+ */
+function shouldConvertDeclaration(declaration: Declaration, options: Options, isAllowedProperty: (prop: string) => boolean): boolean {
+  // Declarations outside rules, such as the descriptors of @font-face, @page and @property, are not converted
+  // 不在规则里的声明（比如 @font-face、@page、@property 的描述符）不转换
+  if (!getClosestRule(declaration)) {
+    return false;
+  }
+
+  // Check if the declaration should be excluded based on file path
+  // 检查是否应该根据文件路径排除该声明
+  if (shouldExcludeFile(options, declaration.source?.input.file || "")) {
+    return false;
+  }
+
+  // The selector lists apply to all the style rules around the declaration.
+  // Keyframe selectors such as `from` and `50%` are not checked.
+  // 选择器名单作用于声明外面的所有样式规则。`from`、`50%` 这类关键帧选择器不参与检查。
+  const selectors = getStyleRules(declaration).map(styleRule => styleRule.selector);
+  if (selectors.length > 0 && shouldExcludeSelectors(options, selectors)) {
+    return false;
+  }
+
+  // Declarations inside @media or @container, also when nested in a rule, are converted only with allowMediaQuery
+  // 位于 @media 或 @container 里的声明（包括嵌套在规则里的情况），只有开启 allowMediaQuery 时才转换
+  if (!options.allowMediaQuery && isInsideMediaQuery(declaration)) {
+    return false;
+  }
+
+  return hasUnit(declaration.value, options.unitType) && isAllowedProperty(declaration.prop);
+}
+
+/**
  * Process one declaration.
  * 处理一条声明。
  */
@@ -206,34 +233,7 @@ function processDeclaration(
   result: Result,
   fileViewportWidth?: number,
 ): void {
-  // Declarations outside rules, such as the descriptors of @font-face, @page and @property, are not converted
-  // 不在规则里的声明（比如 @font-face、@page、@property 的描述符）不转换
-  if (!getClosestRule(declaration)) {
-    return;
-  }
-
-  // Check if the declaration should be excluded based on file path
-  // 检查是否应该根据文件路径排除该声明
-  const sourceFile = declaration.source?.input.file || "";
-  if (shouldExcludeFile(options, sourceFile)) {
-    return;
-  }
-
-  // The selector lists apply to all the style rules around the declaration.
-  // Keyframe selectors such as `from` and `50%` are not checked.
-  // 选择器名单作用于声明外面的所有样式规则。`from`、`50%` 这类关键帧选择器不参与检查。
-  const selectors = getStyleRules(declaration).map(styleRule => styleRule.selector);
-  if (selectors.length > 0 && shouldExcludeSelectors(options, selectors)) {
-    return;
-  }
-
-  // Declarations inside @media or @container, also when nested in a rule, are converted only with allowMediaQuery
-  // 位于 @media 或 @container 里的声明（包括嵌套在规则里的情况），只有开启 allowMediaQuery 时才转换
-  if (!options.allowMediaQuery && isInsideMediaQuery(declaration)) {
-    return;
-  }
-
-  if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
+  if (!shouldConvertDeclaration(declaration, options, isAllowedProperty)) {
     return;
   }
 
@@ -241,6 +241,7 @@ function processDeclaration(
     return;
   }
 
+  const sourceFile = declaration.source?.input.file || "";
   const { targetUnit, targetSize } = getTargetUnitAndSize(declaration, options, sourceFile, fileViewportWidth);
   if (!targetSize) {
     return;

@@ -18,6 +18,18 @@ describe("landscape", () => {
     ));
   });
 
+  it("checks nested rules in the copy the same way as for conversion", () => {
+    expect(normalize(convert(".a { width: 71px; @media (hover: hover) { height: 71px } }", landscape))).toBe(normalize(
+      ".a { width: 18.93333vw; @media (hover: hover) { height: 71px } } @media (orientation: landscape) { .a { width: 12.5vw } }",
+    ));
+    expect(normalize(convert(".a { width: 71px; .skip { height: 71px } }", { ...landscape, selectorBlacklist: [".skip"] }))).toBe(normalize(
+      ".a { width: 18.93333vw; .skip { height: 71px } } @media (orientation: landscape) { .a { width: 12.5vw } }",
+    ));
+    expect(normalize(convert(".other { .only { width: 71px } }", { ...landscape, selectorWhitelist: [".only"] }))).toBe(normalize(
+      ".other { .only { width: 18.93333vw } } @media (orientation: landscape) { .other { .only { width: 12.5vw } } }",
+    ));
+  });
+
   it("leaves at-rules without a block out of the copy", () => {
     expect(normalize(convert(".a { @apply p-4; width: 71px } .b { @apply p-4 }", landscape))).toBe(normalize(
       ".a { @apply p-4; width: 18.93333vw } .b { @apply p-4 } @media (orientation: landscape) { .a { width: 12.5vw } }",
