@@ -1,7 +1,7 @@
 {
   "name": "postcss-px-conversion",
   "type": "module",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "packageManager": "pnpm@12.11.2",
   "description": "PostCSS plugin that converts px to viewport units, px to rem, rem to px and px to rpx",
   "author": "Kirk Lin <https://github.com/kirklin>",
