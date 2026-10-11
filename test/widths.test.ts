@@ -4,14 +4,17 @@ import postcssPxConversion from "../src";
 import { convert } from "./utils";
 
 describe("per-file width comments", () => {
-  it("uses the whole number written in a viewport-width comment", () => {
+  it("uses the width written in a viewport-width comment", () => {
     expect(convert("/* viewport-width: 750 */ .a { width: 75px }")).toBe("/* viewport-width: 750 */ .a { width: 10vw }");
-    expect(convert("/* viewport-width: 187.5 */ .a { width: 75px }")).toBe("/* viewport-width: 187.5 */ .a { width: 40.10695vw }");
+    expect(convert("/* viewport-width: 187.5 */ .a { width: 75px }")).toBe("/* viewport-width: 187.5 */ .a { width: 40vw }");
   });
 
   it("reads the comment set by viewportWidthComment", () => {
     expect(convert("/* design-width 750 */ .a { width: 75px }", { viewportWidthComment: "design-width" })).toBe(
       "/* design-width 750 */ .a { width: 10vw }",
+    );
+    expect(convert("/* width2x 750 */ .a { width: 75px }", { viewportWidthComment: "width2x" })).toBe(
+      "/* width2x 750 */ .a { width: 10vw }",
     );
   });
 

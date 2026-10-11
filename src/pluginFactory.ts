@@ -56,9 +56,11 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         css.walkComments((comment) => {
           const sourceFile = comment.source?.input.file || "";
           if (comment.text.startsWith(options.viewportWidthComment) && !fileViewportWidths.has(sourceFile)) {
-            const widthMatch = comment.text.match(/(\d+)/);
+            // The width is the first number after the marker, decimals included
+            // 宽度取标记文字后面的第一个数，可以带小数
+            const widthMatch = comment.text.slice(options.viewportWidthComment.length).match(/\d*\.?\d+/);
             if (widthMatch) {
-              fileViewportWidths.set(sourceFile, Number.parseInt(widthMatch[1], 10));
+              fileViewportWidths.set(sourceFile, Number(widthMatch[0]));
               // comment.remove(); // 移除配置注释
             }
           }
