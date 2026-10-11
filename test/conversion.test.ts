@@ -56,6 +56,12 @@ describe("px to viewport units", () => {
     expect(convert(".a { width: 15px !important }")).toBe(".a { width: 4vw !important }");
   });
 
+  it("accepts units the types do not list", () => {
+    expect(convert(".a { width: 15px; font-size: 15px }", { viewportUnit: "svw", fontViewportUnit: "dvh" })).toBe(
+      ".a { width: 4svw; font-size: 4dvh }",
+    );
+  });
+
   it("measures viewportWidth in unitType", () => {
     expect(convert(".a { width: 1rem }", { unitType: "rem", viewportWidth: 375 / 16, minPixelValue: 0 })).toBe(
       ".a { width: 4.26667vw }",

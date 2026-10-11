@@ -7,7 +7,7 @@ import type { FONT_VIEWPORT_UNIT_TYPES, UNIT_TYPES, VIEWPORT_UNIT_TYPES } from "
  * Includes "px", "em", "rem", or any other valid custom string type.
  * 包括 "px"、"em"、"rem"，或其他有效的自定义字符串类型。
  */
-export type UnitType = typeof UNIT_TYPES[keyof typeof UNIT_TYPES] | (string & object);
+export type UnitType = typeof UNIT_TYPES[keyof typeof UNIT_TYPES] | (string & Record<never, never>);
 
 /**
  * Type definition for supported viewport unit types.
@@ -16,7 +16,7 @@ export type UnitType = typeof UNIT_TYPES[keyof typeof UNIT_TYPES] | (string & ob
  * Includes "vw", "vh", "vmin", "vmax", or any other valid custom string type.
  * 包括 "vw"、"vh"、"vmin"、"vmax"，或其他有效的自定义字符串类型。
  */
-export type ViewportUnitType = typeof VIEWPORT_UNIT_TYPES[keyof typeof VIEWPORT_UNIT_TYPES] | (string & object);
+export type ViewportUnitType = typeof VIEWPORT_UNIT_TYPES[keyof typeof VIEWPORT_UNIT_TYPES] | (string & Record<never, never>);
 
 /**
  * Type definition for supported font viewport unit types.
@@ -25,7 +25,7 @@ export type ViewportUnitType = typeof VIEWPORT_UNIT_TYPES[keyof typeof VIEWPORT_
  * Includes "vw", "vh", "vmin", "vmax", or any other valid custom string type.
  * 包括 "vw"、"vh"、"vmin"、"vmax"，或其他有效的自定义字符串类型。
  */
-export type FontViewportUnitType = typeof FONT_VIEWPORT_UNIT_TYPES[keyof typeof FONT_VIEWPORT_UNIT_TYPES] | (string & object);
+export type FontViewportUnitType = typeof FONT_VIEWPORT_UNIT_TYPES[keyof typeof FONT_VIEWPORT_UNIT_TYPES] | (string & Record<never, never>);
 
 /**
  * Configuration options for the pixel to viewport unit conversion.
