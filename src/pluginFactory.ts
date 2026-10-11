@@ -1,4 +1,4 @@
-import type { AtRule, Comment, Declaration, Plugin, Result, Root, Rule } from "postcss";
+import type { AtRule, Comment, Container, Declaration, Plugin, Result, Root, Rule } from "postcss";
 import type { Options } from "./types";
 import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 import {
@@ -95,8 +95,8 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
 }
 
 /**
- * Handle landscape mode for a given rule.
- * 处理给定规则的横向模式。
+ * Handle landscape mode for a given rule. The copy keeps nested rules and at-rules in their place.
+ * 处理给定规则的横向模式。副本里嵌套的规则和 at-rule 保持原来的位置。
  */
 function handleLandscapeMode(
   rule: Rule,
@@ -107,15 +107,16 @@ function handleLandscapeMode(
   unitRegexp: RegExp,
   fileViewportWidth?: number,
 ): void {
-  const landscapeRule = rule.clone().removeAll();
+  const landscapeRule = rule.clone();
 
-  rule.walkDecls((declaration: any) => {
+  // Decide for every declaration before changing any, so ignore comments still sit next to their declarations
+  // 先决定每条声明的去留再修改，这样忽略注释仍然紧挨着它们的声明
+  const landscapeValues = new Map<Declaration, string>();
+  landscapeRule.walkDecls((declaration) => {
     if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
       return;
     }
 
-    // The comment stays where it is: the conversion after this removes it
-    // 注释留在原处，由之后的转换移除
     if (getIgnoreComment(declaration)) {
       return;
     }
@@ -135,12 +136,47 @@ function handleLandscapeMode(
       return;
     }
 
-    landscapeRule.append(declaration.clone({ value: landscapeValue }));
+    landscapeValues.set(declaration, landscapeValue);
   });
+
+  landscapeRule.walkDecls((declaration) => {
+    const landscapeValue = landscapeValues.get(declaration);
+    if (landscapeValue === undefined) {
+      declaration.remove();
+    } else {
+      declaration.value = landscapeValue;
+    }
+  });
+  // Comments, ignore comments included, are not copied
+  // 注释（包括忽略注释）不复制
+  landscapeRule.walkComments((comment) => {
+    comment.remove();
+  });
+  removeEmptyContainers(landscapeRule);
+  // Let PostCSS format the copy like the rest of the stylesheet
+  // 让 PostCSS 按样式表其余部分的格式输出副本
+  landscapeRule.cleanRaws();
 
   if (landscapeRule.nodes.length > 0) {
     landscapeAtRules.push(landscapeRule as unknown as AtRule);
   }
+}
+
+/**
+ * Remove rules and at-rules that have nothing left in them. At-rules without a block, such as `@apply`, go too.
+ * 移除里面什么都不剩的规则和 at-rule。没有内容块的 at-rule（比如 `@apply`）也一并移除。
+ */
+function removeEmptyContainers(container: Container): void {
+  container.each((node) => {
+    if (node.type === "rule" || node.type === "atrule") {
+      if (node.nodes) {
+        removeEmptyContainers(node);
+      }
+      if (!node.nodes || node.nodes.length === 0) {
+        node.remove();
+      }
+    }
+  });
 }
 
 /**

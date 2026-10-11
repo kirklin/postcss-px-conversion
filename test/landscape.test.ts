@@ -12,6 +12,18 @@ describe("landscape", () => {
     ));
   });
 
+  it("keeps nested rules in the copy", () => {
+    expect(normalize(convert(".a { width: 71px; &:hover { width: 142px; color: red } }", landscape))).toBe(normalize(
+      ".a { width: 18.93333vw; &:hover { width: 37.86667vw; color: red } } @media (orientation: landscape) { .a { width: 12.5vw; &:hover { width: 25vw } } }",
+    ));
+  });
+
+  it("leaves at-rules without a block out of the copy", () => {
+    expect(normalize(convert(".a { @apply p-4; width: 71px } .b { @apply p-4 }", landscape))).toBe(normalize(
+      ".a { @apply p-4; width: 18.93333vw } .b { @apply p-4 } @media (orientation: landscape) { .a { width: 12.5vw } }",
+    ));
+  });
+
   it("copies only declarations that change", () => {
     expect(normalize(convert(".a { border: 1px solid; width: 71px } .b { border: 1px solid }", landscape))).toBe(normalize(
       ".a { border: 1px solid; width: 18.93333vw } .b { border: 1px solid } @media (orientation: landscape) { .a { width: 12.5vw } }",
