@@ -8,6 +8,12 @@ describe("replaceRules", () => {
     );
   });
 
+  it("adds the converted declaration in keyframes too", () => {
+    expect(convert("@keyframes move { to { left: 15px } }", { replaceRules: false })).toBe(
+      "@keyframes move { to { left: 15px; left: 4vw } }",
+    );
+  });
+
   it("does not add a declaration that is already there", () => {
     const css = ".a { width: 15px; width: 4vw }";
     expect(convert(css, { replaceRules: false })).toBe(css);

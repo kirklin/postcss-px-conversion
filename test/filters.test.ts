@@ -93,7 +93,7 @@ describe("files", () => {
     expect(convert(css, { includeFiles: [/\/pages\//] }, undefined)).toBe(css);
   });
 
-  it("checks each rule against the file it came from", () => {
+  it("checks each declaration against the file it came from", () => {
     const root = postcss.parse(".a { width: 15px }", { from: "/project/src/a.css" });
     root.append(postcss.parse(".b { width: 15px }", { from: "/project/node_modules/b.css" }).nodes);
     const output = postcss([postcssPxConversion({ excludeFiles: [/node_modules/] })]).process(root, { from: undefined }).css;
@@ -102,11 +102,9 @@ describe("files", () => {
 });
 
 describe("at-rules", () => {
-  it("leaves rules inside @media and @container unless allowMediaQuery is set, but converts @media nested in a rule", () => {
+  it("leaves rules inside @media and @container unless allowMediaQuery is set", () => {
     const css = "@media (min-width: 768px) { .a { width: 15px } } @container (min-width: 400px) { .b { width: 15px } } .c { @media (hover: hover) { width: 15px } }";
-    expect(convert(css)).toBe(
-      "@media (min-width: 768px) { .a { width: 15px } } @container (min-width: 400px) { .b { width: 15px } } .c { @media (hover: hover) { width: 4vw } }",
-    );
+    expect(convert(css)).toBe(css);
     expect(convert(css, { allowMediaQuery: true })).toBe(
       "@media (min-width: 768px) { .a { width: 4vw } } @container (min-width: 400px) { .b { width: 4vw } } .c { @media (hover: hover) { width: 4vw } }",
     );
@@ -129,10 +127,17 @@ describe("at-rules", () => {
     );
   });
 
-  it("converts keyframes regardless of allowedProperties", () => {
-    expect(convert("@keyframes move { to { left: 15px } }", { allowedProperties: ["width"] })).toBe(
-      "@keyframes move { to { left: 4vw } }",
-    );
+  it("applies allowedProperties to keyframes", () => {
+    const css = "@keyframes move { to { left: 15px } }";
+    expect(convert(css, { allowedProperties: ["width"] })).toBe(css);
+  });
+
+  it("applies file lists, @media and ignore comments to keyframes", () => {
+    const css = "@keyframes move { to { left: 15px } }";
+    expect(convert(css, { excludeFiles: [/styles/] })).toBe(css);
+    const inMedia = "@media (min-width: 768px) { @keyframes move { to { left: 15px } } }";
+    expect(convert(inMedia)).toBe(inMedia);
+    expect(convert("@keyframes move { to { /* px-conversion-ignore-next */ left: 15px } }")).toBe(css);
   });
 
   it("leaves descriptors of @page, @property and @font-face", () => {

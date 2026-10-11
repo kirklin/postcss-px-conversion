@@ -1,4 +1,4 @@
-import type { AtRule, Node } from "postcss";
+import type { AtRule, Node, Rule } from "postcss";
 import type { ContainerWithChildren } from "postcss/lib/container";
 import type { Options } from "../types";
 
@@ -80,6 +80,41 @@ export function doesDeclarationExist(declarations: ContainerWithChildren | undef
   // eslint-disable-next-line ts/ban-ts-comment
   // @ts-expect-error
   return declarations?.some(declaration => declaration?.prop === property && declaration?.value === value);
+}
+
+/**
+ * The closest rule around a node, keyframe selectors included.
+ * 节点外面最近的一层规则，关键帧选择器也算。
+ */
+export function getClosestRule(node: Node): Rule | undefined {
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent.type === "rule") {
+      return parent as Rule;
+    }
+  }
+  return undefined;
+}
+
+/**
+ * The style rules around a node, innermost first. Keyframe selectors are not style rules.
+ * 节点外面的所有样式规则，从内到外。关键帧选择器不算样式规则。
+ */
+export function getStyleRules(node: Node): Rule[] {
+  const rules: Rule[] = [];
+  for (let parent = node.parent; parent; parent = parent.parent) {
+    if (parent.type === "rule" && !isKeyframeRule(parent as Rule)) {
+      rules.push(parent as Rule);
+    }
+  }
+  return rules;
+}
+
+/**
+ * Whether a rule is a keyframe selector such as `from` or `50%`.
+ * 规则是否是 `from`、`50%` 这类关键帧选择器。
+ */
+export function isKeyframeRule(rule: Rule): boolean {
+  return rule.parent?.type === "atrule" && /keyframes$/i.test((rule.parent as AtRule).name);
 }
 
 /**

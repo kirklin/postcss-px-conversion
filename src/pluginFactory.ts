@@ -1,10 +1,12 @@
-import type { AtRule, Plugin, Result, Root, Rule } from "postcss";
+import type { AtRule, Declaration, Plugin, Result, Root, Rule } from "postcss";
 import type { Options } from "./types";
 import { DEFAULT_OPTIONS, IGNORE_NEXT_COMMENT, IGNORE_PREV_COMMENT, PLUGIN_NAME } from "./constants";
 import {
   createPropertiesListMatcher,
   createUnitReplaceFunction,
   doesDeclarationExist,
+  getClosestRule,
+  getStyleRules,
   getUnitFromOptions,
   getUnitRegexp,
   hasUnit,
@@ -58,22 +60,6 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
           }
         });
       }
-      css.walkAtRules("keyframes", (atRule) => {
-        atRule.walkDecls((decl) => {
-          if (hasUnit(decl.value, options.unitType)) {
-            const sourceFile = atRule.source?.input.file || "";
-            const { targetUnit, targetSize } = getTargetUnitAndSize(atRule, decl, options, sourceFile, fileViewportWidth);
-
-            if (targetSize) {
-              decl.value = decl.value.replace(
-                unitRegexp,
-                createUnitReplaceFunction(options, targetUnit!, targetSize),
-              );
-            }
-          }
-        });
-      });
-
       css.walkRules((rule) => {
         const sourceFile = rule.source?.input.file || "";
 
@@ -90,16 +76,12 @@ export function plugin(customOptions: Partial<Options> = {}): Plugin {
         if (options.enableLandscape && rule.parent?.type !== "rule" && !rule.parent?.params) {
           handleLandscapeMode(rule, options, sourceFile, landscapeAtRules, isAllowedProperty, unitRegexp, fileViewportWidth);
         }
+      });
 
-        // Rules inside @media or @container are converted only with allowMediaQuery
-        // 只有开启 allowMediaQuery 时，才转换 @media 和 @container 里的规则
-        if (!options.allowMediaQuery && isInsideMediaQuery(rule)) {
-          return;
-        }
-
-        // Process declarations within the rule
-        // 处理规则内的声明
-        processDeclarations(rule, options, sourceFile, isAllowedProperty, unitRegexp, result, fileViewportWidth);
+      // Every declaration goes through the same checks, keyframes included. The landscape copies above are taken before this.
+      // 每条声明都经过同样的检查，关键帧也一样。上面的横向副本在这之前复制。
+      css.walkDecls((declaration) => {
+        processDeclaration(declaration, options, isAllowedProperty, unitRegexp, result, fileViewportWidth);
       });
 
       // Add landscape media query if necessary
@@ -166,44 +148,69 @@ function getLandscapeSize(options: Options, sourceFile: string, fileViewportWidt
 }
 
 /**
- * Process declarations within a rule.
- * 处理规则内的声明。
+ * Process one declaration.
+ * 处理一条声明。
  */
-function processDeclarations(
-  rule: Rule,
+function processDeclaration(
+  declaration: Declaration,
   options: Options,
-  sourceFile: string,
   isAllowedProperty: (prop: string) => boolean,
   unitRegexp: RegExp,
   result: Result,
   fileViewportWidth?: number,
 ): void {
-  rule.walkDecls((declaration, index: number) => {
-    if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
-      return;
-    }
+  // Declarations outside rules, such as the descriptors of @font-face, @page and @property, are not converted
+  // 不在规则里的声明（比如 @font-face、@page、@property 的描述符）不转换
+  const rule = getClosestRule(declaration);
+  if (!rule) {
+    return;
+  }
 
-    if (shouldIgnoreDeclaration(declaration, result)) {
-      return;
-    }
+  // Check if the declaration should be excluded based on file path
+  // 检查是否应该根据文件路径排除该声明
+  const sourceFile = declaration.source?.input.file || "";
+  if (shouldExcludeFile(options, sourceFile)) {
+    return;
+  }
 
-    const { targetUnit, targetSize } = getTargetUnitAndSize(rule, declaration, options, sourceFile, fileViewportWidth);
-    if (!targetSize) {
-      return;
-    }
+  // A declaration is converted when at least one of the style rules around it passes the selector lists.
+  // Keyframe selectors such as `from` and `50%` are not checked.
+  // 外面的样式规则里只要有一层通过选择器名单，这条声明就会转换。`from`、`50%` 这类关键帧选择器不参与检查。
+  const styleRules = getStyleRules(declaration);
+  if (styleRules.length > 0 && styleRules.every(styleRule => shouldExcludeSelector(options, styleRule.selector))) {
+    return;
+  }
 
-    const modifiedValue = declaration.value.replace(
-      unitRegexp,
-      createUnitReplaceFunction(options, targetUnit!, targetSize),
-    );
+  // Declarations inside @media or @container, also when nested in a rule, are converted only with allowMediaQuery
+  // 位于 @media 或 @container 里的声明（包括嵌套在规则里的情况），只有开启 allowMediaQuery 时才转换
+  if (!options.allowMediaQuery && isInsideMediaQuery(declaration)) {
+    return;
+  }
 
-    if (options.replaceRules) {
-      declaration.value = modifiedValue;
-    } else if (!doesDeclarationExist(declaration.parent, declaration.prop, modifiedValue)) {
-      // Only an added declaration can duplicate one that is already there.
-      declaration.parent?.insertAfter(index, declaration.clone({ value: modifiedValue }));
-    }
-  });
+  if (!hasUnit(declaration.value, options.unitType) || !isAllowedProperty(declaration.prop)) {
+    return;
+  }
+
+  if (shouldIgnoreDeclaration(declaration, result)) {
+    return;
+  }
+
+  const { targetUnit, targetSize } = getTargetUnitAndSize(rule, declaration, options, sourceFile, fileViewportWidth);
+  if (!targetSize) {
+    return;
+  }
+
+  const modifiedValue = declaration.value.replace(
+    unitRegexp,
+    createUnitReplaceFunction(options, targetUnit!, targetSize),
+  );
+
+  if (options.replaceRules) {
+    declaration.value = modifiedValue;
+  } else if (!doesDeclarationExist(declaration.parent, declaration.prop, modifiedValue)) {
+    // Only an added declaration can duplicate one that is already there.
+    declaration.cloneAfter({ value: modifiedValue });
+  }
 }
 
 /**

@@ -69,6 +69,10 @@ describe("ignore comments", () => {
     ]);
   });
 
+  it("applies to declarations in nested rules", () => {
+    expect(convert(".a { width: 15px; .b { /* px-conversion-ignore-next */ height: 15px } }")).toBe(".a { width: 4vw; .b { height: 15px } }");
+  });
+
   it("keeps the comment when the declaration has nothing to convert", () => {
     const css = ".a { /* px-conversion-ignore-next */ color: red }";
     expect(convert(css)).toBe(css);
