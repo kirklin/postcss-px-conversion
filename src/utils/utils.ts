@@ -55,7 +55,7 @@ export function roundNumberToPrecision(number: number, precision: number): numbe
 }
 
 export function createUnitReplaceFunction(opts: Options, targetUnit: string | number, targetSize: number) {
-  return (match: string, pixelValue: string) => {
+  return (match: string, sign: string, pixelValue: string) => {
     if (!pixelValue) {
       return match;
     }
@@ -66,7 +66,7 @@ export function createUnitReplaceFunction(opts: Options, targetUnit: string | nu
     }
 
     const convertedValue = roundNumberToPrecision((pixels / targetSize) * 100, opts.unitPrecision!);
-    return convertedValue === 0 ? "0" : `${convertedValue}${targetUnit}`;
+    return convertedValue === 0 ? "0" : `${sign}${convertedValue}${targetUnit}`;
   };
 }
 

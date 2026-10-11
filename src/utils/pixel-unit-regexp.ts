@@ -6,8 +6,10 @@
  * @returns {RegExp} - A regular expression to match numeric values with the specified unit.
  */
 export function getUnitRegexp(unit: string): RegExp {
+  // A number counts only as a whole token: digits inside names such as `--gap-10px` are left alone.
+  // Group 1 is the sign, group 2 the number.
   return new RegExp(
-    `"[^"]+"|'[^']+'|url\\([^\\)]+\\)|(\\d*\\.?\\d+)${unit}`,
+    `"[^"]+"|'[^']+'|url\\([^\\)]+\\)|(?<![\\w.-])([+-]?)(\\d*\\.?\\d+)${unit}(?![\\w-])`,
     "g",
   );
 }

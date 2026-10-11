@@ -28,8 +28,8 @@ describe("px to viewport units", () => {
     expect(convert(".a { width: 1.5px }", { unitPrecision: 0, viewportWidth: 1000 })).toBe(".a { width: 0 }");
   });
 
-  it("matches the unit after any digits, even inside an exponent, and only in lower case", () => {
-    expect(convert(".a { margin: -15px +15px .75e2px 15PX }")).toBe(".a { margin: -4vw +4vw .75e0.53333vw 15PX }");
+  it("keeps signs and matches the unit only in lower case and without an exponent", () => {
+    expect(convert(".a { margin: -15px +15px .75e2px 15PX }")).toBe(".a { margin: -4vw +4vw .75e2px 15PX }");
   });
 
   it("converts numbers inside functions and var() fallbacks", () => {
@@ -38,10 +38,9 @@ describe("px to viewport units", () => {
     );
   });
 
-  it("leaves strings and url() but changes names that contain a number with the unit", () => {
-    expect(convert(".a { content: \"15px\"; background: url(icon-15px.png); width: var(--gap-15px); grid-area: a15px }")).toBe(
-      ".a { content: \"15px\"; background: url(icon-15px.png); width: var(--gap-4vw); grid-area: a4vw }",
-    );
+  it("leaves strings, url() and names that only contain a number with the unit", () => {
+    const css = ".a { content: \"15px\"; background: url(icon-15px.png); width: var(--gap-15px); grid-area: a15px }";
+    expect(convert(css)).toBe(css);
   });
 
   it("converts custom properties", () => {
